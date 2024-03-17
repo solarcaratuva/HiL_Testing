@@ -1,0 +1,11 @@
+{
+    "repos_folder": "C:\\Users\\cwise\\Coding\\SolarCar\\",
+    "tests_folder": "HiL_tests\\",
+    "logs_folder": "C:\\Users\\cwise\\Coding\\SolarCar\\HiL-Testing\\logs\\",
+    "boards": {
+        "board1": {
+            "upload_script": "",
+            "pinmap": ""
+        }
+    }
+}
