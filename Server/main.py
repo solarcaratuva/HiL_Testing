@@ -76,7 +76,7 @@ def main() -> None:
                 return
         
     # pip install dependencies for premade tests
-    if "--skip-pip" not in flags:
+    if "--pip" in flags:
         reqsPath = f"{REPOS_FOLDER}{repo_name}/{TESTS_FOLDER}requirements.txt"
         success = pipInstall(reqsPath, this_logs_folder + "pip.txt")
         if success:
