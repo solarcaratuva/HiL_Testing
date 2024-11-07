@@ -25,3 +25,15 @@ DigitalInput class
     Methods:
         Read : bool
 """
+
+class DigitalInput:
+    #Validate the Pin Number
+    def __PinValidate(self, pinName):
+        #Less than 27
+        return 2 <= int(pinName) < 27
+
+    #Constructor
+    def __init__(self, init_pinName: str):
+        if (__PinValidate(init_pinName)):
+            self.pinName = init_pinName
+
