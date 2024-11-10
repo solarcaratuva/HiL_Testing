@@ -3,7 +3,7 @@ import unittest
 import argparse
 import json
 
-def make_suite(board_folder):
+def make_suite(board_folder, config_data):
     # OLD VERSION (if you want only specific tests): 
     # embedded_tests = [ExampleTestStrings("test_add"), ExampleTestStrings("test_subtract")]
 
@@ -11,7 +11,14 @@ def make_suite(board_folder):
     loader = unittest.TestLoader()
     current_suite = unittest.TestSuite()
 
-    current_suite.addTests(loader.discover(start_dir=board_folder, pattern="*.py"))
+    discovered_tests = loader.discover(start_dir=board_folder, pattern="*.py")
+
+    for test in discovered_tests:
+        for test_case in test:
+            for single_test in test_case:
+                single_test.config_data = config_data  # Attach config_data to each test instance
+            current_suite.addTest(test_case)
+
     return current_suite
 
 if __name__ == "__main__":
@@ -35,11 +42,12 @@ if __name__ == "__main__":
     all_suites = unittest.TestSuite()
 
     for board in board_names:
+        
         board_folder = os.path.join(rivanna_root_path, board, "tests/")
         print(f"Checking for tests at path: {board_folder}")
         
         if os.path.isdir(board_folder):
-            suite = make_suite(board_folder)
+            suite = make_suite(board_folder, hil_config)
             all_suites.addTests(suite)
         else:
             print(f"Warning: Folder for board '{board}' not found at path: {board_folder}")

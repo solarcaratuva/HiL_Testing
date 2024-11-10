@@ -1,4 +1,18 @@
 {
-    "rivanna_root": "FakeRivanna2/",
-    "boards": ["PowerBoard", "MotorBoard"]
+    "rivanna_root": "/Users/alextalreja/Desktop/SolarCar2024/HiL_Testing/FakeRivanna2",
+    "boards": ["PowerBoard", "MotorBoard"],
+    "pin_map": {
+        "PowerBoard": {
+            "power": {
+                "voltage": 0,
+                "current": 1
+            }
+        },
+        "MotorBoard": {
+            "motor": {
+                "speed": 0,
+                "direction": 1
+            }
+        }
+    }
 }
