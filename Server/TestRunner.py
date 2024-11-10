@@ -1,7 +1,6 @@
 import os
 import unittest
 import argparse
-import tests.ExampleTestStrings
 import json
 
 def make_suite(board_folder):
