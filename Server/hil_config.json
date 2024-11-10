@@ -1,0 +1,4 @@
+{
+    "rivanna_root": "FakeRivanna2/",
+    "boards": ["PowerBoard", "MotorBoard"]
+}
