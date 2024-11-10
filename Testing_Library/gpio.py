@@ -35,11 +35,29 @@ class DigitalOutput:
         return pin_number
 
     #Constructor
+    #INPUT: self, pinName as a string
+    #OUTPUT: pin object that represents 
     def __init__(self, pinName: str):
         self.pinName = pinName
         self.pinNumber = self.__PinValidate(pinName=pinName)
-        self.pinObject = 
+        self.pinObject = gpiozero.DigitalOutputDevice(self.pinNumber)
 
+    #Writes to the digital pin
+    def write(self, state: bool):
+        if not isinstance(state, bool):
+            raise TypeError("Argument must be of type BOOL")
+
+        if state: 
+            self.pinObject.on()
+        else:
+            self.pinObject.off() 
+
+    def toggle(self):
+        self.pinObject.toggle()
+
+    #returns the current state of the pin
+    def read(self):
+        return self.pinObject.value
 
 
 
