@@ -1,6 +1,11 @@
 import gpiozero
 import json
 
+#IMPORTANT NOTES:
+#Constructors use default values from gpiozero
+#DigitalOutput: Active High, Intitial Value-0, 
+#DigitalInput: Pulldown resistor, Active High, No bounce compensation
+
 """
 DigitalOutput class
     Parameters:
@@ -51,6 +56,12 @@ class DigitalOutput:
             self.pinObject.on()
         else:
             self.pinObject.off() 
+    
+    def on(self):
+        self.pinObject.on()
+
+    def off(self):
+        self.pinObject.off()
 
     def toggle(self):
         self.pinObject.toggle()
@@ -58,9 +69,6 @@ class DigitalOutput:
     #returns the current state of the pin
     def read(self):
         return self.pinObject.value
-
-
-
         
 """"
 DigitalInput class
@@ -72,12 +80,27 @@ DigitalInput class
 
 class DigitalInput:
     #Validate the Pin Number
+    #INPUT: self and pinName as a string
+    #OUTPUT: Sets 
     def __PinValidate(self, pinName):
-        #Less than 27
-        return 2 <= int(pinName) < 27
+        #pin mapping json
+        config_file = "config.json"
+        # Load pin mappings from the config file
+        try:
+            with open(config_file, 'r') as f:
+                pin_map = json.load(f)
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Config file '{config_file}' not found.")
+        except json.JSONDecodeError:
+            raise ValueError(f"Config file '{config_file}' contains invalid JSON.")
 
     #Constructor
-    def __init__(self, init_pinName: str):
-        if (__PinValidate(init_pinName)):
-            self.pinName = init_pinName
+    def __init__(self, pinName: str):
+        self.pinName = pinName
+        self.pinNumber = self.__PinValidate(pinName=pinName)
+        self.pinObject = gpiozero.DigitalInputDevice(self.pinNumber)
+
+    #Read function: returns a boolean 
+    def read(self):
+        self.pinObject.is_active
 
