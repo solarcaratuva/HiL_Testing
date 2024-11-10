@@ -1,6 +1,3 @@
-import gpiozero
-import json
-
 #IMPORTANT NOTES:
 #Constructors use default values from gpiozero
 #DigitalOutput: Active High, Intitial Value-0, 
