@@ -1,5 +1,5 @@
 {
-    "rivanna_root": "/HiL_Testing/FakeRivanna2",
+    "rivanna_root": "~/HiL_Testing/FakeRivanna2",
     "boards": ["PowerBoard", "MotorBoard"],
     "pin_map": {
         "PowerBoard": {
