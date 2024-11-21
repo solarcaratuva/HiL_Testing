@@ -2,6 +2,12 @@ import os
 import unittest
 import argparse
 import json
+import sys
+
+# Add the root directory (HIL_TESTING) to sys.path to access the gpio.py file from within PbExampleTests. 
+# WILL NEED TO UPDATE THIS IS RELATIVE PATHS FROM TESTS TO TESTING_LIBRARY/ changes
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 
 def make_suite(board_folder, config_data):
     # OLD VERSION (if you want only specific tests): 
@@ -11,11 +17,19 @@ def make_suite(board_folder, config_data):
     loader = unittest.TestLoader()
     current_suite = unittest.TestSuite()
 
-    discovered_tests = loader.discover(start_dir=board_folder, pattern="*.py")
+    print("HERE")
 
+    try:
+        discovered_tests = loader.discover(start_dir=board_folder, pattern="*.py")
+        print("TESTS: ", discovered_tests)
+    except Exception as e:
+        print(f"Error discovering tests in {board_folder}: {e}")
+
+    print("Done with discovering tests: ", discovered_tests)
     for test in discovered_tests:
         for test_case in test:
             for single_test in test_case:
+                
                 single_test.config_data = config_data  # Attach config_data to each test instance
             current_suite.addTest(test_case)
 
@@ -32,7 +46,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    hil_config_filepath = "hil_config.json"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    hil_config_filepath = os.path.join(script_dir, "hil_config.json")
     with(open(hil_config_filepath, "r")) as hil_config_file:
         hil_config = json.load(hil_config_file)
      
