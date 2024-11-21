@@ -4,6 +4,7 @@
 #DigitalInput: Pulldown resistor, Active High, No bounce compensation
 import gpiozero
 import json
+import os
 
 #IMPORTANT NOTES:
 #Constructors use default values from gpiozero
@@ -27,7 +28,7 @@ class DigitalOutput:
     #OUTPUT: returns the pin_number from mapping
     def __PinValidate(self, pinName):
         #pin mapping json
-        config_file = "config.json"
+        config_file = os.path.join(os.path.dirname(__file__), "config.json")
         # Load pin mappings from the config file
         with open(config_file, 'r') as f:
             pin_map = json.load(f)
@@ -85,7 +86,7 @@ class DigitalInput:
     #OUTPUT: returns the pin_number from mapping
     def __PinValidate(self, pinName: str) -> bool:
         #pin mapping json
-        config_file = "config.json"
+        config_file = os.path.join(os.path.dirname(__file__), "config.json")
         # Load pin mappings from the config file
         with open(config_file, 'r') as f:
             pin_map = json.load(f)
