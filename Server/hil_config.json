@@ -1,19 +1,8 @@
 {
-    "rivanna_root": "/home/solarcar/HiL_Testing/FakeRivanna2",
+    "rivanna_root": "/home/solarcar/Rivanna3",
     "rivanna3_root": "/SolarCar/Rivanna3",
-    "boards": ["PowerBoard", "MotorBoard"],
+    "boards": ["DriverBoard"],
     "pin_map": {
-        "PowerBoard": {
-            "power": {
-                "voltage": 0,
-                "current": 1
-            }
-        },
-        "MotorBoard": {
-            "motor": {
-                "speed": 0,
-                "direction": 1
-            }
-        }
+	"DriverBoard": {}
     }
 }

@@ -17,23 +17,20 @@ def make_suite(board_folder, config_data):
     loader = unittest.TestLoader()
     current_suite = unittest.TestSuite()
 
-    print("HERE")
-
     try:
         discovered_tests = loader.discover(start_dir=board_folder, pattern="*.py")
         print("TESTS: ", discovered_tests)
     except Exception as e:
         print(f"Error discovering tests in {board_folder}: {e}")
 
-    print("Done with discovering tests: ", discovered_tests)
-    for test in discovered_tests:
-        for test_case in test:
-            for single_test in test_case:
-                
-                single_test.config_data = config_data  # Attach config_data to each test instance
-            current_suite.addTest(test_case)
+    #print("Done with discovering tests: ", discovered_tests)
+    #for test in discovered_tests:
+    #    for test_case in test:
+    #        for single_test in test_case:
+    #            single_test.config_data = config_data  # Attach config_data to each test instance
+    #        current_suite.addTest(test_case)
 
-    return current_suite
+    return discovered_tests
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run test suite with optional verbosity.")
