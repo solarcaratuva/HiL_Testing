@@ -3,7 +3,7 @@ import serial
 import time
 import CANMessage
 
-mbed_serial - serial.Serial(
+mbed_serial = serial.Serial(
     #Define the UART Pin Number (PIN 8 tx and PIN 10 rx)
     port = '/def/serial0',
     baudrate=9600,
