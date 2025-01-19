@@ -18,30 +18,33 @@ class CanMessage:
         self.sigDict = signals
         self.timeStamp = timestamp
         
-    #Encode is not working (returns an empty byte array)
     def encode_message(self) -> bytes:
+        found = False
         #Check whether name is in DBC files
         for db in DBCs:
             for msg in db.messages:
                 if msg.name == self.messageName:
+                    found = True
                     #Ensure full signal dictionary is present (append if not present)
                     for signal in msg.signals:
                         if signal not in self.sigDict:
                             self.sigDict.update({signal.name: 1.0})
-                    #Encode using encode_message()
-                    encoded_message = db.encode_message(self.messageName, self.sigDict)
-                    #add id to first two bytes of encoded_message
-                    return encoded_message
-        #Return None if not present in DBC files            
-        print("Name was not present in DBC files")
-        return None
-         
-         
+                            
+        if (not found):
+            #Return None if not present in DBC files            
+            raise Exception("Name was not present in DBC files")
+            return None
+            
+        #Expected Encoded Format --> ID (First 2 Bytes), Message (All Remaining Bytes)
+        data_encoded = db.encode_message(self.messageName, self.sigDict)
+        encoded_message = self.messageId.to_bytes(2, 'big') + data_encoded
+        #add id to first two bytes of encoded_message
+        return encoded_message
+        
     def getName(self):
         return self.messageName
         
     def __str__(self):
-        #return helpful stuff as string
         string = f"CAN Type: {self.messageName}  |  CAN ID: {self.messageId}  \nDATA: {pprint.pformat(self.sigDict)}\n"
         return string
 
@@ -74,7 +77,7 @@ def decode_message(id: int, data: bytes, timestamp: float) -> CanMessage:
 
     # if decoded message was not associated with a definition from DBCs, return None
     if decoded_message is None:
-        print("Decoded message was not associated")
+        raise Exception("Decoded message was not associated")
         return None
 
     return CanMessage(name, id, decoded_message, timestamp)
