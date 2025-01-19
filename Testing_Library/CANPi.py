@@ -12,10 +12,8 @@ mbed_serial - serial.Serial(
     stopbits=serial.STOPBITS_ONE
 )
 
-
-
 #'CAN' Read Using PySerial
-def read(rx_data):
+def readIn():
     try:
         response = mbed_serial.readline().decode().strip()
         #Convert message into CAN Format using CANMessage
@@ -36,6 +34,11 @@ def read(rx_data):
 
 
 #'CAN' Write Using PySerial
-def write(tx_data):
+def writeOut(tx_data):
     mbed_serial.write(tx_data.encode())
     
+
+while (True) {
+    data = readIn()
+    print(f'THE RASPBERRY PI READ AS CAN THE FOLLOWING MESSAGE: {data}')
+}
