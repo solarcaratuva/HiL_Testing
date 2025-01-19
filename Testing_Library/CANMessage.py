@@ -1,6 +1,7 @@
 #DBC Import
 import cantools as ct
 import os
+import pprint
 
 # DBC_FILES are the 'definitions'/'mappings' files, they are not parseable yet.
 dbc_files = os.listdir("./CAN-messages")
@@ -28,8 +29,8 @@ class CanMessage:
                         if signal not in self.sigDict:
                             self.sigDict.update({signal.name: 1.0})
                     #Encode using encode_message()
-                    #print(msg.id)
                     encoded_message = db.encode_message(self.messageName, self.sigDict)
+                    #add id to first two bytes of encoded_message
                     return encoded_message
         #Return None if not present in DBC files            
         print("Name was not present in DBC files")
@@ -38,6 +39,11 @@ class CanMessage:
          
     def getName(self):
         return self.messageName
+        
+    def __str__(self):
+        #return helpful stuff as string
+        string = f"CAN Type: {self.messageName}  |  CAN ID: {self.messageId}  \nDATA: {pprint.pformat(self.sigDict)}\n"
+        return string
 
 @staticmethod
 def decode_message(id: int, data: bytes, timestamp: float) -> CanMessage:

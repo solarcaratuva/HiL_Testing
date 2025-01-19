@@ -7,7 +7,7 @@ mbed_serial = serial.Serial(
     #Define the UART Pin Number (PIN 8 tx and PIN 10 rx)
     port = '/dev/serial0',
     baudrate=9600,
-    timeout=5,
+    timeout=10,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE
 )
@@ -15,11 +15,17 @@ mbed_serial = serial.Serial(
 #'CAN' Read Using PySerial
 def readIn():
     try:
+        #CURRENTLY ASSUMES MESSAGE ENDS AT NEW LINE CHARACTER
+        #IMPROVEMENT: CHANGE FROM NEW LINE CHARACTER TO EXPECTED LENGTH; 
+        #RECEIVE LENGTH OF MESSAGE AS THIRD BYTE AND USE THAT WITH read_until() METHOD
+        
+        #Expected Format --> ID (First 2 Bytes), Message (All Remaining Bytes)
+        mbed_serial.reset_input_buffer()
         response = mbed_serial.readline()
-        print(f'Encoded CAN Message: {response}')
+        print(f'Encoded CAN Message: {response}\n')
         #Convert message into CAN Format using CANMessage
-        #id_data = int.from_bytes(response[0:2], "big")
-        CANData = CANMessage.decode_message(response[0:2], response[2:], int(time.time()))
+        id_data = int.from_bytes(response[0:2], "big")
+        CANData = CANMessage.decode_message(id_data, response[2:], int(time.time()))
         return CANData
     except serial.SerialException:
         print("Serial Exception Error")
@@ -38,7 +44,7 @@ def defaultCANTest():
     writeOut(testCAN.encode_message())
     time.sleep(1)
     data = readIn() #change decode_message id to 0x325
-    print(f'THE RASPBERRY PI READ AS CAN THE FOLLOWING MESSAGE: {data.getName()}\n')
+    print(f'THE RASPBERRY PI READ AS CAN THE FOLLOWING MESSAGE: {data.getName()}\n ------------------')
 
     
 
@@ -47,8 +53,7 @@ while (True):
         print("READING IN CAN MESSAGE")
         data = readIn()
         time.sleep(1)
-        print(f'HERE IS THE CAN MESSAGE: {data}')
-        print(f'THE RASPBERRY PI READ AS CAN THE FOLLOWING MESSAGE NAME: {data.getName()}\n')
+        print(data)
     except KeyboardInterrupt:
         print("Exiting Program")
         break
