@@ -3,8 +3,8 @@ import cantools as ct
 import os
 
 # DBC_FILES are the 'definitions'/'mappings' files, they are not parseable yet.
-dbc_files = os.listdir("./resources/CAN-messages")
-DBCs = [ct.db.load_file(f"./resources/CAN-messages/{file}") for file in dbc_files if file.endswith(".dbc")]
+dbc_files = os.listdir("./CAN-messages")
+DBCs = [ct.db.load_file(f"./CAN-messages/{file}") for file in dbc_files if file.endswith(".dbc")]
 # DBCs takes the files from DBC_FILES and turns each file into a DBC Object that has functions to access can msg types
 # Function in our code depend on these definitions/configurations to get information on each type of can message.
 
