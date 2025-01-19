@@ -1,5 +1,6 @@
 {
     "rivanna_root": "/home/solarcar/HiL_Testing/FakeRivanna2",
+    "rivanna3_root": "/SolarCar/Rivanna3",
     "boards": ["PowerBoard", "MotorBoard"],
     "pin_map": {
         "PowerBoard": {
