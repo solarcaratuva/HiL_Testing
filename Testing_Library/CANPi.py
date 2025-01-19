@@ -36,6 +36,9 @@ def writeOut(tx_data):
     
 
 while (True):
+    
+    
+    
     data = readIn()
     print(f'THE RASPBERRY PI READ AS CAN THE FOLLOWING MESSAGE: {data}\n')
     print(f'SENDING CAN MESSAGE TO NUCLEO\n')
