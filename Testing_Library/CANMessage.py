@@ -34,7 +34,10 @@ class CanMessage:
         #Return None if not present in DBC files            
         print("Name was not present in DBC files")
         return None
-                    
+         
+         
+    def getName(self):
+        return self.messageName
 
 @staticmethod
 def decode_message(id: int, data: bytes, timestamp: float) -> CanMessage:

@@ -19,7 +19,7 @@ def readIn():
         print(f'Encoded CAN Message: {response}')
         #Convert message into CAN Format using CANMessage
         #id_data = int.from_bytes(response[0:2], "big")
-        CANData = CANMessage.decode_message(0x325, response, int(time.time()))
+        CANData = CANMessage.decode_message(response[0:2], response[2:], int(time.time()))
         return CANData
     except serial.SerialException:
         print("Serial Exception Error")
@@ -33,15 +33,22 @@ def writeOut(tx_data):
     mbed_serial.write(tx_data)
     #mbed_serial.write(tx_data.encode())
     
+def defaultCANTest():
+    testCAN = CANMessage.CanMessage("MotorControllerPowerStatus", 0x325, {}, 0)
+    writeOut(testCAN.encode_message())
+    time.sleep(1)
+    data = readIn() #change decode_message id to 0x325
+    print(f'THE RASPBERRY PI READ AS CAN THE FOLLOWING MESSAGE: {data.getName()}\n')
+
     
-testCAN = CANMessage.CanMessage("MotorControllerPowerStatus", 0x325, {}, 0)
-writeOut(testCAN.encode_message())
+
 while (True):   
     try: 
-        
-        time.sleep(3)
+        print("READING IN CAN MESSAGE")
         data = readIn()
-        print(f'THE RASPBERRY PI READ AS CAN THE FOLLOWING MESSAGE: {data}\n')
+        time.sleep(1)
+        print(f'HERE IS THE CAN MESSAGE: {data}')
+        print(f'THE RASPBERRY PI READ AS CAN THE FOLLOWING MESSAGE NAME: {data.getName()}\n')
     except KeyboardInterrupt:
         print("Exiting Program")
         break
