@@ -16,6 +16,25 @@ class CanMessage:
         self.messageId = id
         self.sigDict = signals
         self.timeStamp = timestamp
+        
+    #Encode is not working (returns an empty byte array)
+    def encode_message(self) -> bytes:
+        #Check whether name is in DBC files
+        for db in DBCs:
+            for msg in db.messages:
+                if msg.name == self.messageName:
+                    #Ensure full signal dictionary is present (append if not present)
+                    for signal in msg.signals:
+                        if signal not in self.sigDict:
+                            self.sigDict.update({signal.name: 1.0})
+                    #Encode using encode_message()
+                    #print(msg.id)
+                    encoded_message = db.encode_message(self.messageName, self.sigDict)
+                    return encoded_message
+        #Return None if not present in DBC files            
+        print("Name was not present in DBC files")
+        return None
+                    
 
 @staticmethod
 def decode_message(id: int, data: bytes, timestamp: float) -> CanMessage:
@@ -46,6 +65,8 @@ def decode_message(id: int, data: bytes, timestamp: float) -> CanMessage:
 
     # if decoded message was not associated with a definition from DBCs, return None
     if decoded_message is None:
+        print("Decoded message was not associated")
         return None
 
     return CanMessage(name, id, decoded_message, timestamp)
+    
