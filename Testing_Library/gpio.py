@@ -6,6 +6,8 @@ import gpiozero
 import json
 import os
 
+from Server.NucleoPinParser import parse_nucleo_pindef_pins, parse_gpio_pins
+
 #IMPORTANT NOTES:
 #Constructors use default values from gpiozero
 #DigitalOutput: Active High, Intitial Value-0, 
@@ -27,19 +29,23 @@ class DigitalOutput:
     #INPUT: self and pinName as a string
     #OUTPUT: returns the pin_number from mapping
     def __PinValidate(self, pinName):
+        main_cpp_dict = parse_gpio_pins()
+        pin_def_dict = parse_nucleo_pindef_pins()
+
         #pin mapping json
         config_file = os.path.join(os.path.dirname(__file__), "config.json")
         # Load pin mappings from the config file
         with open(config_file, 'r') as f:
-            pin_map = json.load(f)
+            pin_mappings = json.load(f)
         
-        # Map the pin name to an integer GPIO pin number
-        if pinName in pin_map:
-            pin_number = pin_map[pinName]
+        # Map the pin name to an integer pin number
+        if main_cpp_dict[pinName] == "DigitalIn":
+            nucleo_pin_number = pin_mappings["PowerBoard_to_nucleo_pin_mapping"][pin_def_dict[pinName]]
+            pi_pin_number = pin_mappings["nucleo_to_pi_mapping"][f"{nucleo_pin_number}"]
         else:
-            raise ValueError(f"Pin name '{pinName}' not found in config file.")
+            raise ValueError(f"Pin name '{pinName}' not found.")
         
-        return pin_number
+        return pi_pin_number
 
     #Constructor
     #INPUT: self, pinName as a string
@@ -85,19 +91,23 @@ class DigitalInput:
     #INPUT: self and pinName as a string
     #OUTPUT: returns the pin_number from mapping
     def __PinValidate(self, pinName: str) -> bool:
+        main_cpp_dict = parse_gpio_pins()
+        pin_def_dict = parse_nucleo_pindef_pins()
+
         #pin mapping json
         config_file = os.path.join(os.path.dirname(__file__), "config.json")
         # Load pin mappings from the config file
         with open(config_file, 'r') as f:
-            pin_map = json.load(f)
+            pin_mappings = json.load(f)
         
-        # Map the pin name to an integer GPIO pin number
-        if pinName in pin_map:
-            pin_number = pin_map[pinName]
+        # Map the pin name to an integer pin number
+        if main_cpp_dict[pinName] == "DigitalOut":
+            nucleo_pin_number = pin_mappings["PowerBoard_to_nucleo_pin_mapping"][pin_def_dict[pinName]]
+            pi_pin_number = pin_mappings["nucleo_to_pi_mapping"][f"{nucleo_pin_number}"]
         else:
-            raise ValueError(f"Pin name '{pinName}' not found in config file.")
-        
-        return pin_number
+            raise ValueError(f"Pin name '{pinName}' not found.")
+
+        return pi_pin_number
 
     #Constructor
     def __init__(self, pinName: str):

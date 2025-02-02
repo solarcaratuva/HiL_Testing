@@ -28,9 +28,7 @@ def parse_nucleo_pindef_pins():
     for pin_name, pin_number in pin_definitions:
         pin_dict[pin_name] = pin_number
 
-    print("Extracted Pin Definitions:")
-    for pin_name, pin_number in pin_dict.items():
-        print(f"{pin_name}: {pin_number}")
+    return pin_dict
 
 
 def parse_gpio_pins():
@@ -53,8 +51,4 @@ def parse_gpio_pins():
     for pin_type, pin_name in pins:
         pin_dict[pin_name] = pin_type
 
-    print("Extracted Pins")
-    for pin_name, pin_type in pin_dict.items():
-        print(f"{pin_name}: {pin_type}")
-
-parse_gpio_pins()
+    return pin_dict
