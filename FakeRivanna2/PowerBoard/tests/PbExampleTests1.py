@@ -19,6 +19,6 @@ class ExampleTestStrings1(unittest.TestCase):
     
     def test_gpio_pin_creation(self):
         """ Test the creation of a GPIO pin within power board """
-        pin = DigitalInput("GPIO2")
-        self.assertEqual(pin.pinName, "GPIO2")
-        self.assertEqual(pin.pinNumber, 2)
+        pin = DigitalInput("GPIO11")
+        self.assertEqual(pin.pinName, "GPIO11")
+        self.assertEqual(pin.pinNumber, 11)
