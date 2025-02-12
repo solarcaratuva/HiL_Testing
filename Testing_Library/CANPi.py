@@ -13,7 +13,7 @@ mbed_serial = serial.Serial(
 )
 
 #'CAN' Read Using PySerial
-def readIn():
+def readIn() -> CANMessage:
     try:
         #CURRENTLY ASSUMES MESSAGE ENDS AT NEW LINE CHARACTER
         #IMPROVEMENT: CHANGE FROM NEW LINE CHARACTER TO EXPECTED LENGTH; 
@@ -33,14 +33,10 @@ def readIn():
     except serial.SerialTimeoutException:
         print("Serial Timeout Error")    
         
-#'CAN' Write Using PySerial
+#'CAN' Write Using PySerial: accepts CANMessage tx_data
 def writeOut(tx_data):
     print(f'WRITING TO PIN: {tx_data}') 
     mbed_serial.write(tx_data.encode_message())
-
-
-
-
 
 
 #Use this to test encoding (raspberry pi to nucleo)
