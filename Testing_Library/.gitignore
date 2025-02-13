@@ -1,7 +1,0 @@
-.venv
-.vscode
-logs
-Server/__pycache__
-Server/TODO
-Testing_Package/__pycache__
-Testing_Package/TODO
