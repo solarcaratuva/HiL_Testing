@@ -21,7 +21,7 @@ def readIn() -> CANMessage:
         
         mbed_serial.reset_input_buffer()
         response = mbed_serial.readline()
-        print(f'READ ENCODED MESSAGE: {response}\n')
+        #print(f'READ ENCODED MESSAGE: {response}\n')
         #Convert message into CAN Format using CANMessage
         id_data = int.from_bytes(response[0:2], "big")
         CANData = CANMessage.decode_message(id_data, response[2:], int(time.time()))
@@ -35,7 +35,7 @@ def readIn() -> CANMessage:
         
 #'CAN' Write Using PySerial: accepts CANMessage tx_data
 def writeOut(tx_data):
-    print(f'WRITING TO PIN: {tx_data}') 
+    #print(f'WRITING TO PIN: {tx_data}') 
     mbed_serial.write(tx_data.encode_message())
 
 
@@ -44,19 +44,16 @@ def defaultCANEncodeTest():
     testCAN = CANMessage.CanMessage("MotorCommands", 0x200, {}, 0)
     writeOut(testCAN)
     data = readIn()
-    print(data)
+    #print(data)
 
 #Use this to test decoding (nucleo to raspberry pi)
 def defaultCANDecodeTest():
     while (True):   
         try: 
-            print("READING IN CAN MESSAGE")
+            #print("READING IN CAN MESSAGE")
             data = readIn()
             time.sleep(1)
             print(data)
         except KeyboardInterrupt:
-            print("Exiting Program")
+            #print("Exiting Program")
             break
-        
-defaultCANEncodeTest()
-

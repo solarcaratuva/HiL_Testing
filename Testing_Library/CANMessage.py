@@ -4,11 +4,10 @@ import os
 import pprint
 
 # DBC_FILES are the 'definitions'/'mappings' files, they are not parseable yet.
-dbc_files = os.listdir("./CAN-messages")
-DBCs = [ct.db.load_file(f"./CAN-messages/{file}") for file in dbc_files if file.endswith(".dbc")]
+dbc_files = os.listdir("/home/solarcar/HiL_Testing/Testing_Library/CAN-messages")
+DBCs = [ct.db.load_file(f"/home/solarcar/HiL_Testing/Testing_Library/CAN-messages/{file}") for file in dbc_files if file.endswith(".dbc")]
 # DBCs takes the files from DBC_FILES and turns each file into a DBC Object that has functions to access can msg types
 # Function in our code depend on these definitions/configurations to get information on each type of can message.
-
 
 #CANMessage Format on Raspberry Pi
 class CanMessage:
@@ -29,6 +28,7 @@ class CanMessage:
                     for signal in msg.signals:
                         if signal not in self.sigDict:
                             self.sigDict.update({signal.name: 1.0})
+                    found_db = db 
                             
         if (not found):
             #Return None if not present in DBC files            
@@ -36,7 +36,7 @@ class CanMessage:
             return None
             
         #Expected Encoded Format --> ID (First 2 Bytes), Message (All Remaining Bytes)
-        data_encoded = db.encode_message(self.messageName, self.sigDict)
+        data_encoded = found_db.encode_message(self.messageName, self.sigDict)
         encoded_message = self.messageId.to_bytes(2, 'big') + data_encoded
         #add id to first two bytes of encoded_message
         return encoded_message
