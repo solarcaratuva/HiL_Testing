@@ -4,11 +4,9 @@ import argparse
 import json
 import sys
 
-# Add the root directory (HIL_TESTING) to sys.path to access the gpio.py file from within PbExampleTests. 
-# WILL NEED TO UPDATE THIS IS RELATIVE PATHS FROM TESTS TO TESTING_LIBRARY/ changes
-sys.path.append(os.path.join(os.getcwd(), "Server/"))
-sys.path.append(os.path.join(os.getcwd(), "Testing_Library/"))
-
+script_dir = os.path.dirname(os.path.abspath(__file__))
+new_root = os.path.abspath(os.path.join(script_dir, "..", "Testing_Library"))
+sys.path.append(new_root)
 
 def make_suite(board_folder, config_data):
     # OLD VERSION (if you want only specific tests): 
