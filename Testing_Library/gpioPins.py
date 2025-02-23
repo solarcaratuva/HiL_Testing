@@ -163,11 +163,14 @@ class AnalogOutput:
         self.pinObject = gpiozero.PWMOutputDevice(self.pinNumber)
 
     #Accepts values of [0,1]
-    def set_duty_cycle(self, value: float):
+    def write(self, value: float) -> None:
         if 0.0 <= value <= 1.0:
             self.pinObject.value = value
         
         #else: do nothing
+
+    def read(self) -> float:
+        return self.pinObject.value
         
     #sets duty cycle to 1.0
     def on(self) -> None:
