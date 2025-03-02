@@ -15,16 +15,28 @@ mbed_serial = serial.Serial(
 #'CAN' Read Using PySerial
 def readIn() -> CANMessage:
     try:
-        #CURRENTLY ASSUMES MESSAGE ENDS AT NEW LINE CHARACTER
-        #IMPROVEMENT: CHANGE FROM NEW LINE CHARACTER TO EXPECTED LENGTH; 
-        #RECEIVE LENGTH OF MESSAGE AS THIRD BYTE AND USE THAT WITH read_until() METHOD
-        
+        #CURRENTLY: Message format: 2 bytes of ID, 1 byte of length, rest data
+
         mbed_serial.reset_input_buffer()
-        response = mbed_serial.readline()
-        #print(f'READ ENCODED MESSAGE: {response}\n')
-        #Convert message into CAN Format using CANMessage
-        id_data = int.from_bytes(response[0:2], "big")
-        CANData = CANMessage.decode_message(id_data, response[2:], int(time.time()))
+
+        if mbed_serial.in_waiting >= 3:
+            response = mbed_serial.read(2)
+            id_data = int.from_bytes(response[0:2], "big")
+
+            response = mbed_serial.read(1)
+            length_data = int.from_bytes(response[0], "big")
+
+            if 0 <= length_data <= 8:
+                response = mbed_serial.read(length_data)
+
+        #OLD CODE:
+        # response = mbed_serial.readline()
+        # #print(f'READ ENCODED MESSAGE: {response}\n')
+        # #Convert message into CAN Format using CANMessage
+        # id_data = int.from_bytes(response[0:2], "big")
+
+        
+        CANData = CANMessage.decode_message(id_data, response, int(time.time()))
         return CANData
         
     except serial.SerialException:

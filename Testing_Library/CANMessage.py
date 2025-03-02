@@ -37,7 +37,7 @@ class CanMessage:
             
         #Expected Encoded Format --> ID (First 2 Bytes), Message (All Remaining Bytes)
         data_encoded = found_db.encode_message(self.messageName, self.sigDict)
-        encoded_message = self.messageId.to_bytes(2, 'big') + data_encoded
+        encoded_message = self.messageId.to_bytes(2, 'big') + len(data_encoded).to_bytes(1, 'big') + data_encoded
         #add id to first two bytes of encoded_message
         return encoded_message
         
