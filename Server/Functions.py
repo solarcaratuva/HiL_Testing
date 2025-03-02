@@ -27,11 +27,13 @@ def gitPull(repoPath: str, branch: str) -> tuple[bool, str]:
     try:
         repo = git.Repo(repoPath)
         origin = repo.remote(name='origin')
-        origin.pull()
+        origin.fetch()
 
-        if branch not in repo.refs:
+        remote_branches = [ref.name.split('/')[-1] for ref in origin.refs]
+        if branch not in remote_branches:
             return False, f"Branch \"{branch}\" does not exist!"
         repo.git.checkout(branch)
+        origin.pull()
 
         lastCommit = repo.head.commit.committed_date
         time = datetime.fromtimestamp(lastCommit)
