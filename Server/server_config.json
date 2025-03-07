@@ -1,5 +1,11 @@
 {
-    "PowerBoard_to_nucleo_pin_mapping": {
+    "repo_paths": {
+        "Rivanna3": "/home/solarcar/Rivanna3"
+    },
+
+
+
+    "nucleo_pin_name_to_number_mapping": {
         "PA_0": 0,
         "PA_1": 1,
         "PA_2": 2,
