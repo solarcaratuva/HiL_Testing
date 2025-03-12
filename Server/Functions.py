@@ -26,8 +26,7 @@ def gitPull(repoPath: str, branch: str) -> tuple[bool, str]:
         return False, str(e)
 
 
-def compile(compileCmd: str, repoName: str) -> bool:
-    containerName = f"{repoName}_compile"
+def compile(compileCmd: str, containerName: str) -> bool:
     client = docker.from_env()
     container = client.containers.get(containerName)
     container.start()
