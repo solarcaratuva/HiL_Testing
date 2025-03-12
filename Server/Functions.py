@@ -6,9 +6,9 @@ import os
 import config
 
 
-def gitPull(repoPath: str, branch: str) -> tuple[bool, str]:
+def gitPull(branch: str) -> tuple[bool, str]:
     try:
-        repo = git.Repo(repoPath)
+        repo = git.Repo(config.REPO_ROOT)
         origin = repo.remote(name='origin')
         origin.fetch()
 
@@ -26,7 +26,9 @@ def gitPull(repoPath: str, branch: str) -> tuple[bool, str]:
         return False, str(e)
 
 
-def compile(compileCmd: str, containerName: str) -> bool:
+def compile() -> bool:
+    compileCmd = config.REPO_CONFIG["compileCmd"]
+    containerName = config.REPO_CONFIG["containerName"]
     client = docker.from_env()
     container = client.containers.get(containerName)
     container.start()
@@ -42,8 +44,9 @@ def compile(compileCmd: str, containerName: str) -> bool:
     return exitCode == 0
 
 
-def upload(uploadCmd: str, board: str, repoPath: str) -> bool:
-    command = f"cd {repoPath} && {uploadCmd}"
+def upload(board: str) -> bool:
+    uploadCmd = config.REPO_CONFIG["boards"][board]["uploadCmd"]
+    command = f"cd {config.REPO_ROOT} && {uploadCmd}"
     logPath = os.path.join(config.LOG_FOLDER, f"upload_{board}.log")
     with open(logPath, "w") as log:
         process = subprocess.Popen(command, stdout=log, stderr=log, encoding="utf-8", shell=True)

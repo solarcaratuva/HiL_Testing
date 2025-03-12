@@ -1,6 +1,5 @@
 import os.path
 import unittest
-import json
 import sys
 import config
 
