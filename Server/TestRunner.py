@@ -21,7 +21,7 @@ def make_suite(board_folder):
     return discovered_tests
 
 def run_tests() -> None:
-    board_names = config.REPO_CONFIG["boards"]
+    board_names = config.REPO_CONFIG["boards"].keys()
 
     all_suites = unittest.TestSuite()
 
