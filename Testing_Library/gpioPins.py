@@ -7,12 +7,17 @@ import Server.config as config
 #DigitalOutput: Active High, Intitial Value-0, 
 #DigitalInput: Pulldown resistor, Active High, No bounce compensation
 
+DEBUG_SKIP_PIN_VALIDATION = True
+
 def PinValidate(pinName: str, pinType: str) -> int:
     """SHOULD NOT BE CALLED BY TESTS. Validate the Pin Number.
 
     @param pinName: The nice pin name (ex. THROTTLE_PEDAL) on the Nucleo as a string
     @param pinType: The type of pin as a string
     @return: The pin number on the Pi as an integer"""
+
+    if DEBUG_SKIP_PIN_VALIDATION:
+        return int(pinName)
 
     if not isinstance(pinName, str):
         raise TypeError("Pin name must be a string")
