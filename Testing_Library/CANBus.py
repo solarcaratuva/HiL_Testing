@@ -2,7 +2,12 @@
 import cantools as ct
 import os
 import pprint
+
 import CANMessage
+import CANPi
+
+import threading
+import time
 
 # DBC_FILES are the 'definitions'/'mappings' files, they are not parseable yet.
 dbc_files = os.listdir("/home/solarcar/HiL_Testing/Testing_Library/CAN-messages")
@@ -10,26 +15,46 @@ DBCs = [ct.db.load_file(f"/home/solarcar/HiL_Testing/Testing_Library/CAN-message
 # DBCs takes the files from DBC_FILES and turns each file into a DBC Object that has functions to access can msg types
 # Function in our code depend on these definitions/configurations to get information on each type of can message.
 
-#CANBusDict => {(CANMessage) Message Type : [CANMessages] Instances of Message Type}
+#CANBusDict => {(str) Message Type : [CANMessages] Instances of Message Type}
 
 class CANBus:
     def __init__(self):
+        self.stopReadThread = False
         self.CANBusDict = {}
         #Instantiate CANBus using dbc files
         for db in DBCs:
             for msg in db.messages:
                 #msg is of type CANMessage
-                CANBusDict[msg] = None
+                CANBusDict[msg.getName()] = None
 
-    def printCANBus():
-        for messageType, canMessages in self.AllCANMessages.items():
+    def printCANBus(self):
+        for messageType, canMessage in self.AllCANMessages.items():
             print(f'This is the CAN Message Type: {messageType} \t | \t These are the CAN Messages: {canMessages} ')
     
-    def addToCANBus(CANMessageToAdd : CANMessage):
+    def sendMessage(self, msg : CANMessage):
+        CANPi.writeOut(msg)
+
+    #Run infinite thread to read in CAN Messages
+    def startReadThread(self):
+        self.stop_thread = False
+        read_thread = threading.Thread(target=readMessages)
+        read_thread.start()
+
+    def readMessages(self):
+        while not self.stop_thread:
+            read_can_message = CANPi.readIn()
+            addToCANBus(read_can_message)
+            #CHECK WHETHER A DELAY IS NEEDED OR NOT
+            time.sleep(1)
+
+    def stopReadThread(self):
+        self.stop_thread = True
+
+    def addToCANBus(self, CANMessageToAdd : CANMessage):
         #Check whether can message name is in dbc files
         found = False
         for messageType in self.CANBusDict.keys():
-            if (messageType.getName() == CANMessageToAdd.getName()):
+            if (messageType == CANMessageToAdd.getName()):
                 found = True
         if (not found){
             raise ValueError("CAN Message type was not found in the DBC files.")
@@ -37,5 +62,10 @@ class CANBus:
         #Add to CANBus
         self.CANBusDict.get(CANMessage).append(CANMessageToAdd)
 
-    def clear():
+    def getReceivedMessages(self, messageName : str)
+        can_messages = self.CANBusDict.get(messageName)
+        self.clear()
+        return can_messages
+
+    def clear(self):
         self.CANBusDict = {}
