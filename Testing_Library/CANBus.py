@@ -25,10 +25,10 @@ class CANBus:
         for db in DBCs:
             for msg in db.messages:
                 #msg is of type CANMessage
-                CANBusDict[msg.getName()] = None
+                self.CANBusDict[msg.getName()] = []
 
     def printCANBus(self):
-        for messageType, canMessage in self.AllCANMessages.items():
+        for messageType, canMessage in self.CANBusDict.items():
             print(f'This is the CAN Message Type: {messageType} \t | \t These are the CAN Messages: {canMessages} ')
     
     def sendMessage(self, msg : CANMessage):
@@ -37,8 +37,9 @@ class CANBus:
     #Run infinite thread to read in CAN Messages
     def startReadThread(self):
         self.stop_thread = False
-        read_thread = threading.Thread(target=readMessages)
+        read_thread = threading.Thread(target=self.readMessages)
         read_thread.start()
+        self.readMessages()
 
     def readMessages(self):
         while not self.stop_thread:
@@ -56,16 +57,15 @@ class CANBus:
         for messageType in self.CANBusDict.keys():
             if (messageType == CANMessageToAdd.getName()):
                 found = True
-        if (not found){
+        if (not found):
             raise ValueError("CAN Message type was not found in the DBC files.")
-        }
         #Add to CANBus
-        self.CANBusDict.get(CANMessage).append(CANMessageToAdd)
+        self.CANBusDict.get(CANMessage.getName()).append(CANMessageToAdd)
 
-    def getReceivedMessages(self, messageName : str)
+    def getReceivedMessages(self, messageName : str):
         can_messages = self.CANBusDict.get(messageName)
         self.clear()
         return can_messages
 
-    def clear(self):
+    def clearReceivedMessages(self):
         self.CANBusDict = {}
