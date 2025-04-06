@@ -73,8 +73,9 @@ class CANBus:
 
     def getReceivedMessages(self, messageName : str):
         can_messages = self.CANBusDict.get(messageName)
-        self.clear()
+        self.clearReceivedMessages(messageName)
         return can_messages
 
-    def clearReceivedMessages(self):
-        self.CANBusDict = {}
+	#Clear only for that specific message type
+    def clearReceivedMessages(self, messageName : str):
+        self.CANBusDict[messageName] = []
