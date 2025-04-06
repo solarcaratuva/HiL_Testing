@@ -2,6 +2,7 @@ import os
 import unittest
 import sys
 import config
+import xmlrunner
 
 # Adds the Testing_Library to the path, allowing tests to import from it
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -9,6 +10,19 @@ new_root = os.path.abspath(os.path.join(script_dir, "..", "Testing_Library"))
 sys.path.append(new_root)
 sys.path.append(os.getcwd())
 
+# Custom TestSuite that overrides the run method to run setup and teardown code
+class CustomTestSuite(unittest.TestSuite):
+    def run(self, result, debug=False):
+        setup_suite()
+        super().run(result, debug)
+        teardown_suite()
+
+def setup_suite():
+    print("Setting up suite...") # replace with setup code
+
+def teardown_suite():
+    print("Tearing down suite...") # replace with teardown code
+    
 def make_suite(board_folder):
     loader = unittest.TestLoader()
 
@@ -31,9 +45,11 @@ def run_tests() -> None:
         
         if os.path.isdir(board_folder):
             suite = make_suite(board_folder)
-            all_suites.addTests(suite)
+            custom_suite = CustomTestSuite([suite])
+            all_suites.addTests(custom_suite)
         else:
             print(f"Warning: Folder for board '{board}' not found at path: {board_folder}")
 
-    runner = unittest.TextTestRunner()
-    runner.run(all_suites)
+    with open("test-results.xml", "wb") as output:
+        runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
+        runner.run(all_suites)
