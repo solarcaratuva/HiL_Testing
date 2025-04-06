@@ -36,7 +36,7 @@ def make_suite(board_folder):
 def run_tests() -> None:
     board_names = config.REPO_CONFIG["boards"].keys()
 
-    all_suites = unittest.TestSuite
+    all_suites = unittest.TestSuite()
 
     for board in board_names:
         board_folder = os.path.join(config.REPO_ROOT, board, "tests/")
@@ -50,5 +50,5 @@ def run_tests() -> None:
             print(f"Warning: Folder for board '{board}' not found at path: {board_folder}")
 
     with open("test-results.xml", "wb") as output:
-        runner = xmlrunner.XMLTestRunner(output=output)
+        runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
         runner.run(all_suites)
