@@ -17,8 +17,8 @@ def read_in_configs(repoName: str) -> bool:
     """Reads in server and repo config files for a given repo. Sets global constants. Returns True if `repoName` is a valid repo, False otherwise."""
     global SERVER_CONFIG, REPO_CONFIG, REPO_ROOT
 
-    server_congig_path = os.path.join(os.path.dirname(__file__), "server_config.json")
-    with open(server_congig_path, 'r') as file:
+    server_config_path = os.path.join(os.path.dirname(__file__), "server_config.json")
+    with open(server_config_path, 'r') as file:
         SERVER_CONFIG = json.load(file)
 
     if repoName not in SERVER_CONFIG["repo_paths"]:

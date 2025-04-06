@@ -22,7 +22,7 @@ def setup_suite():
 
 def teardown_suite():
     print("Tearing down suite...") # replace with teardown code
-
+    
 def make_suite(board_folder):
     loader = unittest.TestLoader()
 

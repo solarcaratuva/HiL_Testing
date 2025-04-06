@@ -1,4 +1,4 @@
-from gpio import *
+from gpioPins import *
 import time
 
 pinOut = DigitalOutput("GPIO2")
