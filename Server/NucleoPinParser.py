@@ -1,18 +1,13 @@
-import os
-import json
 import re
+import os
+import config
 
-def parse_nucleo_pindef_pins():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    hil_config_filepath = os.path.join(script_dir, "hil_config.json")
-    with(open(hil_config_filepath, "r")) as hil_config_file:
-        hil_config = json.load(hil_config_file)
+def parse_nucleo_pindef_pins(board: str) -> dict[str, str]:
+    """Returns a dictionary mapping nice pin names (ex. THROTTLE_PEDAL) to actual pin names (ex. PC_10)"""
 
-    rivanna3_root_path = hil_config["rivanna3_root"]
-    base_path = os.path.expanduser("~")
-    pin_def = os.path.join(base_path, rivanna3_root_path.lstrip("/"), "PowerBoard/include/pindef.h")
+    pindef_path = os.path.join(config.REPO_ROOT, board, "include", "pindef.h")
 
-    with(open(pin_def, "r")) as pindef_file:
+    with(open(pindef_path, "r")) as pindef_file:
         pindef_content = pindef_file.read()
 
     # extract conditional block under #ifdef TARGET_NUCLEO_F413ZH
@@ -24,30 +19,25 @@ def parse_nucleo_pindef_pins():
     pin_definitions = re.findall(define_pattern, conditional_content)
 
     # convert the pin defintions to a dictionary
-    pin_dict = {}
+    pin_dict = dict()
     for pin_name, pin_number in pin_definitions:
         pin_dict[pin_name] = pin_number
 
     return pin_dict
 
 
-def parse_gpio_pins():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    hil_config_filepath = os.path.join(script_dir, "hil_config.json")
-    with(open(hil_config_filepath, "r")) as hil_config_file:
-        hil_config = json.load(hil_config_file)
+def parse_gpio_pins(board: str) -> dict[str, str]:
+    """Returns a dictionary mapping nice pin names (ex. THROTTLE_PEDAL) to pin types (ex. AnalogIn)"""
 
-    rivanna3_root_path = hil_config["rivanna3_root"]
-    base_path = os.path.expanduser("~")
-    main_cpp = os.path.join(base_path, rivanna3_root_path.lstrip("/"), "PowerBoard/src/main.cpp")
+    maincpp_path = os.path.join(config.REPO_ROOT, board, "src", "main.cpp")
 
-    with(open(main_cpp, "r")) as main_file:
+    with(open(maincpp_path, "r")) as main_file:
         main_file_content = main_file.read()
 
-    regex_pattern = r"(DigitalOut|DigitalIn|AnalogOut|AnalogIn)\s+\w+\((\w+)[,\)]"
+    regex_pattern = r"(DigitalOut|DigitalIn|AnalogIn)\s+\w+\((\w+)[,\)]"
     pins = re.findall(regex_pattern, main_file_content)
 
-    pin_dict = {}
+    pin_dict = dict()
     for pin_type, pin_name in pins:
         pin_dict[pin_name] = pin_type
 
