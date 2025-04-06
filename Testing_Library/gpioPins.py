@@ -1,20 +1,55 @@
-#IMPORTANT NOTES:
-#Constructors use default values from gpiozero
-#DigitalOutput: Active High, Intitial Value-0, 
-#DigitalInput: Pulldown resistor, Active High, No bounce compensation
 import gpiozero
-import json
-import os
-
-# from Server.NucleoPinParser import parse_nucleo_pindef_pins, parse_gpio_pins
+import time
+import config
 
 #IMPORTANT NOTES:
 #Constructors use default values from gpiozero
 #DigitalOutput: Active High, Intitial Value-0, 
 #DigitalInput: Pulldown resistor, Active High, No bounce compensation
 
-"""
-DigitalOutput class
+DEBUG_SKIP_PIN_VALIDATION = True
+
+def PinValidate(pinName: str, pinType: str) -> int:
+    """SHOULD NOT BE CALLED BY TESTS. Validate the Pin Number.
+
+    @param pinName: The nice pin name (ex. THROTTLE_PEDAL) on the Nucleo as a string
+    @param pinType: The type of pin as a string
+    @return: The pin number on the Pi as an integer"""
+
+    if DEBUG_SKIP_PIN_VALIDATION:
+        return int(pinName)
+
+    if not isinstance(pinName, str):
+        raise TypeError("Pin name must be a string")
+
+    if pinName not in config.PIN_NAMES_MAP:
+        raise ValueError(f"Pin name '{pinName}' not declared in pindef.h")
+    nucleo_pin_name = config.PIN_NAMES_MAP[pinName]
+
+    if nucleo_pin_name not in config.SERVER_CONFIG["nucleo_pin_name_to_number_mapping"]:
+        raise ValueError(f"Nucleo pin name '{nucleo_pin_name}' not mapped to a pin number in server_config.json")
+    nucleo_pin_number = config.SERVER_CONFIG["nucleo_pin_name_to_number_mapping"][nucleo_pin_name]
+
+    if str(nucleo_pin_number) not in config.SERVER_CONFIG["nucleo_to_pi_mapping"]:
+        raise ValueError(f"Nucleo pin number '{nucleo_pin_number}' not mapped to a Pi pin in server_config.json")
+    pi_pin_number = config.SERVER_CONFIG["nucleo_to_pi_mapping"][str(nucleo_pin_number)]
+
+    pin_types_map = {"DigitalIn": "DigitalOut", "DigitalOut": "DigitalIn", "AnalogOut": "AnalogIn"} # key: Pi pin types, values: appropriate Nucleo pin type
+    if pin_types_map[pinType] != config.PIN_TYPES_MAP[pinName]:
+        raise ValueError(f"'{pinName}' is a {pinType} pin on the Pi, which can't properly connect to a {config.PIN_TYPES_MAP[pinName]} Nucleo pin")
+    
+    return pi_pin_number
+
+def reset_all_pins() -> None:
+    pass #TODO
+
+def reset_nucleo() -> None:
+    pass #TODO
+
+
+class DigitalOutput:
+    """
+    DigitalOutput class
     Parameters:
         Pinname : String (same style as pinmap.h; validate pin name)
     Methods:
@@ -22,42 +57,15 @@ DigitalOutput class
         On (turn pin on)
         Off (turn pin off)
         Toggle (toggle state of pin)
-"""
-class DigitalOutput:
+    """
 
-    #Validate the Pin Number
-    #INPUT: self and pinName as a string
-    #OUTPUT: returns the pin_number from mapping
-    def __PinValidate(self, pinName):
-        # main_cpp_dict = parse_gpio_pins()
-        # pin_def_dict = parse_nucleo_pindef_pins()
-
-        #pin mapping json
-        #config_file = os.path.join(os.path.dirname(__file__), "config.json")
-        # Load pin mappings from the config file
-        #with open(config_file, 'r') as f:
-        #    pin_mappings = json.load(f)
-        
-        # Map the pin name to an integer pin number
-        #if main_cpp_dict[pinName] == "DigitalIn":
-        #    nucleo_pin_number = pin_mappings["PowerBoard_to_nucleo_pin_mapping"][pin_def_dict[pinName]]
-        #    pi_pin_number = pin_mappings["nucleo_to_pi_mapping"][f"{nucleo_pin_number}"]
-        #else:
-        #    raise ValueError(f"Pin name '{pinName}' not found.")
-        
-        pi_pin_number = 2
-        return pi_pin_number
-
-    #Constructor
-    #INPUT: self, pinName as a string
-    #OUTPUT: pin object that represents 
     def __init__(self, pinName: str):
         self.pinName = pinName
-        self.pinNumber = self.__PinValidate(pinName=pinName)
+        self.pinNumber = PinValidate(pinName, "DigitalOutput")
         self.pinObject = gpiozero.DigitalOutputDevice(self.pinNumber)
 
-    #Writes to the digital pin
     def write(self, state: bool) -> None:
+        """Writes to the digital pin"""
         if not isinstance(state, bool):
             raise TypeError("Argument must be of type BOOL")
 
@@ -77,81 +85,35 @@ class DigitalOutput:
 
     #returns the current state of the pin
     def read(self) -> bool:
-        return self.pinObject.value
+        return self.pinObject.value == 1
         
-""""
-DigitalInput class
+
+class DigitalInput:
+    """"
+    DigitalInput class
     Parameters:
         Pinname : String (same style as pinmap.h; validate pin name)
     Methods:
         Read : bool
-"""
+    """
 
-class DigitalInput:
-    #Validate the Pin Number
-    #INPUT: self and pinName as a string
-    #OUTPUT: returns the pin_number from mapping
-    def __PinValidate(self, pinName: str) -> bool:
-        #main_cpp_dict = parse_gpio_pins()
-        #pin_def_dict = parse_nucleo_pindef_pins()
-
-        #pin mapping json
-        #config_file = os.path.join(os.path.dirname(__file__), "config.json")
-        # Load pin mappings from the config file
-        #with open(config_file, 'r') as f:
-        #    pin_mappings = json.load(f)
-        
-        # Map the pin name to an integer pin number
-        #if main_cpp_dict[pinName] == "DigitalOut":
-        #    nucleo_pin_number = pin_mappings["PowerBoard_to_nucleo_pin_mapping"][pin_def_dict[pinName]]
-        #    pi_pin_number = pin_mappings["nucleo_to_pi_mapping"][f"{nucleo_pin_number}"]
-        #else:
-        #    raise ValueError(f"Pin name '{pinName}' not found.")
-        
-        pi_pin_number = 11
-
-        return pi_pin_number
-
-    #Constructor
     def __init__(self, pinName: str):
         self.pinName = pinName
-        self.pinNumber = self.__PinValidate(pinName=pinName)
+        self.pinNumber = PinValidate(pinName, "DigitalInput")
         self.pinObject = gpiozero.DigitalInputDevice(self.pinNumber)
 
-    #Read function: returns a boolean 
     def read(self) -> bool:
         return self.pinObject.is_active
+    
 
-"""
-AnalogOutput class
+class AnalogOutput:
+    """
+    AnalogOutput class
     Parameters:
         Pinname : String (same style as pinmap.h; validate pin name)
     Methods:
         Write (validate input based on established range)
-"""
-
-class AnalogOutput:
-    #Validate the Pin Number
-    #INPUT: self and pinName as a string
-    #OUTPUT: returns the pin_number from mapping
-    def __PinValidate(self, pinName: str) -> bool:
-        main_cpp_dict = parse_gpio_pins()
-        pin_def_dict = parse_nucleo_pindef_pins()
-
-        #pin mapping json
-        config_file = os.path.join(os.path.dirname(__file__), "config.json")
-        # Load pin mappings from the config file
-        with open(config_file, 'r') as f:
-            pin_mappings = json.load(f)
-        
-        # Map the pin name to an integer pin number
-        if main_cpp_dict[pinName] == "DigitalOut":
-            nucleo_pin_number = pin_mappings["PowerBoard_to_nucleo_pin_mapping"][pin_def_dict[pinName]]
-            pi_pin_number = pin_mappings["nucleo_to_pi_mapping"][f"{nucleo_pin_number}"]
-        else:
-            raise ValueError(f"Pin name '{pinName}' not found.")
-
-        return pi_pin_number
+    """
     
     #Constructor
         #Active-High
@@ -159,16 +121,19 @@ class AnalogOutput:
         #Default freq: 100 Hz ;)
     def __init__(self, pinName: str):
         self.pinName = pinName
-        self.pinNumber = self.__PinValidate(pinName=pinName)
-        self.pinObject = gpiozero.PWMOutputDevice(self.pinNumber)
+        self.pinNumber = PinValidate(pinName, "AnalogOutput")
+        self.pinObject = gpiozero.PWMOutputDevice(self.pinNumber, frequency=5000)
 
     #Accepts values of [0,1]
     def write(self, value: float) -> None:
-        if 0.0 <= value <= 1.0:
-            self.pinObject.value = value
+        if not isinstance(value, float):
+            raise TypeError("Value must be a float")
+        if value < 0 or value > 1:
+            raise ValueError("Value must be between 0 and 1")
         
-        #else: do nothing
-
+        self.pinObject.value = value
+        time.sleep(0.02) # wait 20ms for the capacitor in the lowpass filter to charge / discharge as needed
+        
     def read(self) -> float:
         return self.pinObject.value
         
