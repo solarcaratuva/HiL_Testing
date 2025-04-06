@@ -1,6 +1,6 @@
 import gpiozero
 import time
-import Server.config as config
+import config
 
 #IMPORTANT NOTES:
 #Constructors use default values from gpiozero
