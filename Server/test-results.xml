@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-	<testsuite name="test.DriverBoardTests-20250406155512" tests="3" file="test.py" time="3.515" timestamp="2025-04-06T15:55:15" failures="0" errors="0" skipped="0">
-		<testcase classname="test.DriverBoardTests" name="test_bms_strobe" time="1.012" timestamp="2025-04-06T15:55:13" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="44"/>
-		<testcase classname="test.DriverBoardTests" name="test_failing_test_right_turn_signal" time="0.000" timestamp="2025-04-06T15:55:13" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="75"/>
-		<testcase classname="test.DriverBoardTests" name="test_turn_signals" time="2.502" timestamp="2025-04-06T15:55:15" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="12"/>
+	<testsuite name="test.DriverBoardTests-20250406155628" tests="3" file="test.py" time="3.012" timestamp="2025-04-06T15:56:31" failures="0" errors="0" skipped="0">
+		<testcase classname="test.DriverBoardTests" name="test_bms_strobe" time="1.010" timestamp="2025-04-06T15:56:29" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="44"/>
+		<testcase classname="test.DriverBoardTests" name="test_failing_test_right_turn_signal" time="0.000" timestamp="2025-04-06T15:56:29" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="75"/>
+		<testcase classname="test.DriverBoardTests" name="test_turn_signals" time="2.002" timestamp="2025-04-06T15:56:31" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="12"/>
 	</testsuite>
 </testsuites>
