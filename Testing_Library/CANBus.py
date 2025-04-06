@@ -26,6 +26,8 @@ class CANBus:
             for msg in db.messages:
                 #msg is of type CANMessage
                 self.CANBusDict[msg.getName()] = []
+        self.lock = threading.Lock()
+        self.startReadThread()
 
     def printCANBus(self):
         for messageType, canMessage in self.CANBusDict.items():
@@ -38,15 +40,22 @@ class CANBus:
     def startReadThread(self):
         self.stop_thread = False
         read_thread = threading.Thread(target=self.readMessages)
-        read_thread.start()
-        self.readMessages()
-
+        
     def readMessages(self):
-        while not self.stop_thread:
-            read_can_message = CANPi.readIn()
-            addToCANBus(read_can_message)
-            #CHECK WHETHER A DELAY IS NEEDED OR NOT
-            time.sleep(1)
+        self.lock.acquire()
+        try:
+            read_thread.start()
+        except ValueError as e:
+            print(f"Caught the following exception: {e} \n Check whether the global dictionary is still locked.\n")
+        
+        with self.CANBusDict:
+            while not self.stop_thread:
+                read_can_message = CANPi.readIn()
+                addToCANBus(read_can_message)
+                #CHECK WHETHER A DELAY IS NEEDED OR NOT
+                time.sleep(1)
+
+        self.lock.release()
 
     def stopReadThread(self):
         self.stop_thread = True
