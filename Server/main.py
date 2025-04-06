@@ -4,7 +4,7 @@ import TestRunner
 
 def main() -> None:
     config.read_in_configs("Rivanna3")
-    config.read_in_nucleo_pinmaps("DriverBoard")
+    #config.read_in_nucleo_pinmaps("DriverBoard")
     TestRunner.run_tests()
 
 
