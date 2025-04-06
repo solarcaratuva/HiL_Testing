@@ -1,4 +1,4 @@
-#IMPORTANT NOTES:
+ #IMPORTANT NOTES:
 #Constructors use default values from gpiozero
 #DigitalOutput: Active High, Intitial Value-0, 
 #DigitalInput: Pulldown resistor, Active High, No bounce compensation
