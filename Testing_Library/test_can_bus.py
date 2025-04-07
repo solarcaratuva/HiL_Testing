@@ -25,17 +25,16 @@ def testAddMethod(canBus : CANBus):
 	canBus.printCANBus()
 
 
-#canBus = CANBus()
+canBus = CANBus()
 #testAddMethod(canBus)
 
 
 counter = 0
 while (counter < 10):
 	print(f'Reading number {counter}')
-	#canBus.printCANBus()
-	#time.sleep(0.5)
-	print(readIn())
+	canBus.printCANBus()
+	time.sleep(0.5)
 	counter = counter + 1
 
-#canBus.stopReadThread()
+canBus.stopReadThread()
 
