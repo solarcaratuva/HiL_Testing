@@ -16,24 +16,23 @@ mbed_serial = serial.Serial(
 def readIn() -> CANMessage:
     try:
         #CURRENTLY: Message format: 2 bytes of ID, 1 byte of length, rest data
+        #mbed_serial.reset_input_buffer()
+        print("HERE")
+        print(f'THIS IS WHAT I"M READING IN: {mbed_serial.read(2)}')
+        response = mbed_serial.read(2)
+        id_data = int.from_bytes(response[0:2], "big")
 
-        mbed_serial.reset_input_buffer()
-        if mbed_serial.in_waiting >= 3:
-            response = mbed_serial.read(2)
-            id_data = int.from_bytes(response[0:2], "big")
+        response = mbed_serial.read(1)
+        length_data = int.from_bytes(response[0], "big")
 
-            response = mbed_serial.read(1)
-            length_data = int.from_bytes(response[0], "big")
+        if 0 <= length_data <= 8:
+            response = mbed_serial.read(length_data)
+        #if (response != None):
+        print(f"This is the raw byte being read in: {response}\n\n\n")
 
-            if 0 <= length_data <= 8:
-                response = mbed_serial.read(length_data)
-            #if (response != None):
-            print(f"This is the raw byte being read in: {response}\n\n\n")
-
-            CANData = CANMessage.decode_message(id_data, response, int(time.time()))
-            return CANData
+        CANData = CANMessage.decode_message(id_data, response, int(time.time()))
+        return CANData
             
-        return None
         #OLD CODE:
         # response = mbed_serial.readline()
         # #print(f'READ ENCODED MESSAGE: {response}\n')
@@ -45,7 +44,9 @@ def readIn() -> CANMessage:
         print("Serial Exception Error")
 
     except serial.SerialTimeoutException:
-        print("Serial Timeout Error")    
+        print("Serial Timeout Error")
+    except Exception as e:
+        print(e)    
         
 #'CAN' Write Using PySerial: accepts CANMessage tx_data
 def writeOut(tx_data):
@@ -72,4 +73,3 @@ def defaultCANDecodeTest():
             #print("Exiting Program")
             break
             
-#defaultCANDecodeTest()

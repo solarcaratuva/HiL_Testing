@@ -49,6 +49,7 @@ class CANBus:
         with self.lock:
             while (not self.stop_thread):
                 read_can_message = CANPi.readIn()
+                #read_can_message = None
                 if (read_can_message != None):
                     self.addToCANBus(read_can_message)
                 #CHECK WHETHER A DELAY IS NEEDED OR NOT

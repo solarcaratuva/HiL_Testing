@@ -1,6 +1,13 @@
+import sys
+sys.path.append('/home/solarcar/solarcar/HiL_Testing/Server')
+
 from CANBus import CANBus
 from CANMessage import CanMessage
+from CANPi import readIn
 import time
+import serial
+from gpioPins import DigitalInput, DigitalOutput
+
 
 def testAddMethod(canBus : CANBus):
 	canBus.printCANBus()
@@ -18,15 +25,17 @@ def testAddMethod(canBus : CANBus):
 	canBus.printCANBus()
 
 
-canBus = CANBus()
+#canBus = CANBus()
 #testAddMethod(canBus)
+
 
 counter = 0
 while (counter < 10):
 	print(f'Reading number {counter}')
-	canBus.printCANBus()
-	time.sleep(2)
+	#canBus.printCANBus()
+	time.sleep(0.5)
+	print(readIn())
 	counter = counter + 1
 
-
 canBus.stopReadThread()
+
