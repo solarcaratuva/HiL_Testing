@@ -28,16 +28,17 @@ def readIn() -> CANMessage:
 
             if 0 <= length_data <= 8:
                 response = mbed_serial.read(length_data)
-
+             
+            CANData = CANMessage.decode_message(id_data, response, int(time.time()))
+            return CANData
+            
+        return None
         #OLD CODE:
         # response = mbed_serial.readline()
         # #print(f'READ ENCODED MESSAGE: {response}\n')
         # #Convert message into CAN Format using CANMessage
         # id_data = int.from_bytes(response[0:2], "big")
 
-        
-        CANData = CANMessage.decode_message(id_data, response, int(time.time()))
-        return CANData
         
     except serial.SerialException:
         print("Serial Exception Error")
