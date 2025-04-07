@@ -5,34 +5,31 @@ import CANMessage
 
 mbed_serial = serial.Serial(
     #Define the UART Pin Number (PIN 8 tx and PIN 10 rx)
-    port = '/dev/serial0',
-    baudrate=9600,
+    port = '/dev/ttyAMA0',
+    baudrate=14400,
     timeout=10,
     parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE
+    stopbits=serial.STOPBITS_ONE,
 )
 
 #'CAN' Read Using PySerial
 def readIn() -> CANMessage:
     try:
         #CURRENTLY: Message format: 2 bytes of ID, 1 byte of length, rest data
-        #mbed_serial.reset_input_buffer()
-        print("HERE")
-        print(f'THIS IS WHAT I"M READING IN: {mbed_serial.read(2)}')
-        response = mbed_serial.read(2)
-        id_data = int.from_bytes(response[0:2], "big")
+        mbed_serial.reset_input_buffer()
 
+        response = mbed_serial.read(2)       
+        id_data = int.from_bytes(response[0:2], "big")
+        
         response = mbed_serial.read(1)
-        length_data = int.from_bytes(response[0], "big")
+        length_data = int.from_bytes(response, "big")
 
         if 0 <= length_data <= 8:
             response = mbed_serial.read(length_data)
-        #if (response != None):
-        print(f"This is the raw byte being read in: {response}\n\n\n")
 
         CANData = CANMessage.decode_message(id_data, response, int(time.time()))
         return CANData
-            
+        
         #OLD CODE:
         # response = mbed_serial.readline()
         # #print(f'READ ENCODED MESSAGE: {response}\n')
