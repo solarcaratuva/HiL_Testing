@@ -52,7 +52,7 @@ class CANBus:
                 if (read_can_message != None):
                     self.addToCANBus(read_can_message)
                 #CHECK WHETHER A DELAY IS NEEDED OR NOT
-                #time.sleep(1)
+                time.sleep(0.5)
 
     def stopReadThread(self):
         self.stop_thread = True

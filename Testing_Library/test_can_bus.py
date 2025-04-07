@@ -25,7 +25,7 @@ counter = 0
 while (counter < 10):
 	print(f'Reading number {counter}')
 	canBus.printCANBus()
-	time.sleep(0.5)
+	time.sleep(2)
 	counter = counter + 1
 
 
