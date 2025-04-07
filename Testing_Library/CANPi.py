@@ -18,7 +18,6 @@ def readIn() -> CANMessage:
         #CURRENTLY: Message format: 2 bytes of ID, 1 byte of length, rest data
 
         mbed_serial.reset_input_buffer()
-
         if mbed_serial.in_waiting >= 3:
             response = mbed_serial.read(2)
             id_data = int.from_bytes(response[0:2], "big")
@@ -28,7 +27,9 @@ def readIn() -> CANMessage:
 
             if 0 <= length_data <= 8:
                 response = mbed_serial.read(length_data)
-             
+            #if (response != None):
+            print(f"This is the raw byte being read in: {response}\n\n\n")
+
             CANData = CANMessage.decode_message(id_data, response, int(time.time()))
             return CANData
             
@@ -70,3 +71,5 @@ def defaultCANDecodeTest():
         except KeyboardInterrupt:
             #print("Exiting Program")
             break
+            
+#defaultCANDecodeTest()
