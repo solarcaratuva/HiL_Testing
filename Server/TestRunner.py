@@ -4,7 +4,9 @@ import sys
 import config
 import xmlrunner
 from Functions import upload
-from Testing_Library.gpioPins import reset_nucleo
+
+sys.path.append("/home/solarcar/solarcar/HiL_Testing/Testing_Library")
+from gpioPins import reset_nucleo
 
 # Adds the Testing_Library to the path, allowing tests to import from it
 script_dir = os.path.dirname(os.path.abspath(__file__))
