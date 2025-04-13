@@ -1,4 +1,4 @@
-import os.path
+import os
 import unittest
 import sys
 import config
@@ -10,6 +10,7 @@ from Testing_Library.gpioPins import reset_nucleo
 script_dir = os.path.dirname(os.path.abspath(__file__))
 new_root = os.path.abspath(os.path.join(script_dir, "..", "Testing_Library"))
 sys.path.append(new_root)
+sys.path.append(os.getcwd())
 
 # Custom TestSuite that overrides the run method to run setup and teardown code
 class CustomTestSuite(unittest.TestSuite):
@@ -38,7 +39,7 @@ def setup_suite(board: str):
 
 def teardown_suite(board: str):
     print("Tearing down suite...") # replace with teardown code
-
+    
 def make_suite(board_folder):
     loader = unittest.TestLoader()
 

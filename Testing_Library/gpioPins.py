@@ -1,6 +1,6 @@
 import gpiozero
 import time
-import Server.config as config
+import config
 
 #IMPORTANT NOTES:
 #Constructors use default values from gpiozero
@@ -91,7 +91,6 @@ class DigitalOutput:
     def read(self) -> bool:
         return self.pinObject.value == 1
         
-
 
 class DigitalInput:
     """"
