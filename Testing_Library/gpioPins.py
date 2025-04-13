@@ -44,7 +44,11 @@ def reset_all_pins() -> None:
     pass #TODO
 
 def reset_nucleo() -> None:
-    pass #TODO
+    pinObject = gpiozero.DigitalOutputDevice(2)
+    pinObject.on()
+    time.sleep(1)
+    pinObject.off()
+
 
 
 class DigitalOutput:
