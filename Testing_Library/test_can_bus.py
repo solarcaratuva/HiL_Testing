@@ -24,15 +24,28 @@ def testAddMethod(canBus : CANBus):
 	canBus.addToCANBus(can_message)
 	canBus.printCANBus()
 
+def testReadThread(canBus : CANBus):
+	counter = 0
+	while (counter < 10):
+		print(f'Reading number {counter}')
+		canBus.printCANBus()
+		time.sleep(0.5)
+		counter = counter + 1
 
 canBus = CANBus()
 #testAddMethod(canBus)
+canBus.printCANBus()
+time.sleep(1)
 
+#Example CANMessage
+name = "BPSError"
+id = 0x106
+signals = {"internal_communications_fault" : 1}
+timestamp = 1.0
+can_message = CanMessage(name, id, signals, timestamp)
+canBus.sendMessage(can_message)
+time.sleep(1)
 
-counter = 0
-while (counter < 10):
-	print(f'Reading number {counter}')
-	canBus.printCANBus()
-	time.sleep(0.5)
-	counter = counter + 1
+canBus.printCANBus()
+
 
