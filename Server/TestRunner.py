@@ -16,11 +16,14 @@ sys.path.append(os.getcwd())
 
 # Custom TestSuite that overrides the run method to run setup and teardown code
 class CustomTestSuite(unittest.TestSuite):
-    def __init__(self, tests = ..., board = None):
+    def __init__(self, tests = None, board = None):
+        if tests is None:
+            tests = []
         super().__init__(tests)
         self.board = board
 
     def run(self, result, debug=False):
+        print(self.board)
         per_test_setup = setup_suite(self.board)
 
         for suite in self: # one TestSuite per board
@@ -31,6 +34,7 @@ class CustomTestSuite(unittest.TestSuite):
         teardown_suite(self.board)
 
 def setup_suite(board: str):
+    print(board)
     upload(board)
 
     def per_test_setup(testcase_instance):
@@ -56,7 +60,7 @@ def make_suite(board_folder):
 def run_tests() -> None:
     board_names = config.REPO_CONFIG["boards"].keys()
 
-    all_suites = unittest.TestSuite()
+    all_suites = CustomTestSuite()
 
     for board in board_names:
         board_folder = os.path.join(config.REPO_ROOT, board, "tests/")
@@ -64,7 +68,7 @@ def run_tests() -> None:
         
         if os.path.isdir(board_folder):
             suite = make_suite(board_folder)
-            custom_suite = CustomTestSuite([suite], board=board)
+            custom_suite = CustomTestSuite(suite, board=board)
             all_suites.addTests(custom_suite)
         else:
             print(f"Warning: Folder for board '{board}' not found at path: {board_folder}")
