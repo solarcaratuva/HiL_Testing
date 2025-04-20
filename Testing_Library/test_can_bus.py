@@ -43,9 +43,11 @@ id = 0x106
 signals = {"internal_communications_fault" : 1}
 timestamp = 1.0
 can_message = CanMessage(name, id, signals, timestamp)
-canBus.sendMessage(can_message)
-time.sleep(1)
-
-canBus.printCANBus()
+counter = 0
+while (counter < 5):
+	print(f'Sending number {counter}')
+	canBus.sendMessage(can_message)
+	time.sleep(2)
+	counter = counter + 1
 
 
