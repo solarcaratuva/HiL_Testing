@@ -36,5 +36,3 @@ while (counter < 10):
 	time.sleep(0.5)
 	counter = counter + 1
 
-canBus.stopReadThread()
-
