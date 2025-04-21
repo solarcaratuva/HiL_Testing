@@ -47,7 +47,6 @@ def readIn() -> CANMessage:
         
 #'CAN' Write Using PySerial: accepts CANMessage tx_data
 def writeOut(tx_data):
-    #print(f'WRITING TO PIN: {tx_data}') 
     mbed_serial.write(tx_data.encode_message())
 
 

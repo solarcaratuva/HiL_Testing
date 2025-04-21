@@ -2,18 +2,22 @@
 import cantools as ct
 import os
 import pprint
+import serial
+import CANMessage
 
-from CANMessage import CanMessage
-import CANPi
+from CANMessage import CanMessage, DBCs
 
 import threading
 import time
 
-# DBC_FILES are the 'definitions'/'mappings' files, they are not parseable yet.
-dbc_files = os.listdir("/home/solarcar/solarcar/HiL_Testing/Testing_Library/CAN-messages")
-DBCs = [ct.db.load_file(f"/home/solarcar/solarcar/HiL_Testing/Testing_Library/CAN-messages/{file}") for file in dbc_files if file.endswith(".dbc")]
-# DBCs takes the files from DBC_FILES and turns each file into a DBC Object that has functions to access can msg types
-# Function in our code depend on these definitions/configurations to get information on each type of can message.
+mbed_serial = serial.Serial(
+    #Define the UART Pin Number (PIN 8 tx and PIN 10 rx)
+    port = '/dev/ttyAMA0',
+    baudrate=14400,
+    timeout=10,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+)
 
 #CANBusDict => {(str) Message Type : [CANMessages] Instances of Message Type}
 
@@ -34,7 +38,7 @@ class CANBus:
             print(f'This is the CAN Message Type: {messageType} \t | \t These are the CAN Messages: {canMessage} ')
     
     def sendMessage(self, msg : CanMessage):
-        CANPi.writeOut(msg)
+        mbed_serial.write(msg.encode_message())
 
     #Run infinite thread to read in CAN Messages
     def startReadThread(self):
@@ -48,15 +52,23 @@ class CANBus:
     def readMessages(self):
         with self.lock:
             while (not self.stop_thread):
-                read_can_message = CANPi.readIn()
-                #read_can_message = None
+                #CURRENTLY: Message format: 2 bytes of ID, 1 byte of length, rest data
+                mbed_serial.reset_input_buffer()
+
+                response = mbed_serial.read(2)       
+                id_data = int.from_bytes(response[0:2], "big")
+                response = mbed_serial.read(1)
+                length_data = int.from_bytes(response, "big")
+
+                if 0 <= length_data <= 8:
+                    response = mbed_serial.read(length_data)
+
+                read_can_message = CANMessage.decode_message(id_data, response, int(time.time()))
                 if (read_can_message != None):
                     self.addToCANBus(read_can_message)
+                    
                 #CHECK WHETHER A DELAY IS NEEDED OR NOT
-                time.sleep(0.5)
-
-    def stopReadThread(self):
-        self.stop_thread = True
+                time.sleep(0.1)
 
     def addToCANBus(self, CANMessageToAdd : CanMessage):
         #Check whether can message name is in dbc files
