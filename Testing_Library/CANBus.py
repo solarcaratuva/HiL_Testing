@@ -29,7 +29,7 @@ class CANBus:
         for db in DBCs:
             for msg in db.messages:
                 #msg is of type CANMessage
-                self.CANBusDict[msg.name] = []
+                self.CANBusDict[msg.name] = list()
         self.lock = threading.Lock()
         self.startReadThread()
 
@@ -50,8 +50,8 @@ class CANBus:
             print(f"Caught the following exception: {e} \n Check whether the global dictionary is still locked.\n")
         
     def readMessages(self):
-        with self.lock:
-            while (not self.stop_thread):
+        while (not self.stop_thread):
+            with self.lock:
                 #CURRENTLY: Message format: 2 bytes of ID, 1 byte of length, rest data
                 mbed_serial.reset_input_buffer()
 
@@ -67,8 +67,7 @@ class CANBus:
                 if (read_can_message != None):
                     self.addToCANBus(read_can_message)
                     
-                #CHECK WHETHER A DELAY IS NEEDED OR NOT
-                time.sleep(0.1)
+                time.sleep(0.01)
 
     def addToCANBus(self, CANMessageToAdd : CanMessage):
         #Check whether can message name is in dbc files
@@ -88,4 +87,4 @@ class CANBus:
 
 	#Clear only for that specific message type
     def clearReceivedMessages(self, messageName : str):
-        self.CANBusDict[messageName] = []
+        self.CANBusDict[messageName] = list()

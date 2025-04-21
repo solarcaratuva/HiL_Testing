@@ -19,8 +19,6 @@ def testAddMethod(canBus : CANBus):
 	signals = {"internal_communications_fault" : 1}
 	timestamp = 1.0
 	can_message = CanMessage(name, id, signals, timestamp)
-
-
 	canBus.addToCANBus(can_message)
 	canBus.printCANBus()
 
