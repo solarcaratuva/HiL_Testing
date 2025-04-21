@@ -11,8 +11,6 @@ mbed_serial = serial.Serial(
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
 )
-#MADE NULL BY CANBus
-
 #MADE NULL BY CANBus.py
 
 #'CAN' Read Using PySerial
