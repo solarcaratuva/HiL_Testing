@@ -8,7 +8,6 @@ import time
 import serial
 from gpioPins import DigitalInput, DigitalOutput
 
-
 def testAddMethod(canBus : CANBus):
 	canBus.printCANBus()
 
@@ -30,6 +29,7 @@ def testReadThread(canBus : CANBus):
 		time.sleep(0.5)
 		counter = counter + 1
 		
+#Send BPSError to Nucleo (currently turn LD1 off and on)
 def testWrite(canBus : CANBus):
 	#Example CANMessage
 	name = "BPSError"
@@ -43,6 +43,3 @@ def testWrite(canBus : CANBus):
 		canBus.sendMessage(can_message)
 		time.sleep(2)
 		counter = counter + 1
-
-canBus = CANBus()
-
