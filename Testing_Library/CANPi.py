@@ -12,6 +12,8 @@ mbed_serial = serial.Serial(
     stopbits=serial.STOPBITS_ONE,
 )
 
+#MADE NULL BY CANBus.py
+
 #'CAN' Read Using PySerial
 def readIn() -> CANMessage:
     try:
