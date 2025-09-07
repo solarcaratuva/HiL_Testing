@@ -45,5 +45,6 @@ def testWrite(canBus : CANBus):
 		counter = counter + 1
 		
 canBus = CANBus()
-testAddMethod(canBus)
+#testAddMethod(canBus)
 testWrite(canBus)
+#testReadThread(canBus)
