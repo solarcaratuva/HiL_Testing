@@ -43,3 +43,7 @@ def testWrite(canBus : CANBus):
 		canBus.sendMessage(can_message)
 		time.sleep(2)
 		counter = counter + 1
+		
+canBus = CANBus()
+testAddMethod(canBus)
+testWrite(canBus)

@@ -13,7 +13,7 @@ def turnAllOn():
 		pinOut = gpiozero.DigitalOutputDevice("GPIO" + str(i))
 		pinOut.on()
 		input("WAITING TO TURN ON: " + str(i+1))
-	
+
 turnAllOn()
 turnAllOff()
 time.sleep(3)
