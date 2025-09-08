@@ -1,8 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-	<testsuite name="test.DriverBoardTests-20250406155628" tests="3" file="test.py" time="3.012" timestamp="2025-04-06T15:56:31" failures="0" errors="0" skipped="0">
-		<testcase classname="test.DriverBoardTests" name="test_bms_strobe" time="1.010" timestamp="2025-04-06T15:56:29" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="44"/>
-		<testcase classname="test.DriverBoardTests" name="test_failing_test_right_turn_signal" time="0.000" timestamp="2025-04-06T15:56:29" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="75"/>
-		<testcase classname="test.DriverBoardTests" name="test_turn_signals" time="2.002" timestamp="2025-04-06T15:56:31" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="12"/>
+	<testsuite name="test.DriverBoardTests-20250908052311" tests="3" file="test.py" time="11.016" timestamp="2025-09-08T05:23:22" failures="2" errors="0" skipped="0">
+		<testcase classname="test.DriverBoardTests" name="test_failing_test_right_turn_signal" time="0.000" timestamp="2025-09-08T05:23:16" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="78"/>
+		<testcase classname="test.DriverBoardTests" name="test_bms_strobe" time="5.011" timestamp="2025-09-08T05:23:16" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="45">
+			<failure type="AssertionError" message="0 not greater than or equal to 2 : BMS_STROBE_OUT did not flash as expected."><![CDATA[Traceback (most recent call last):
+  File "/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py", line 76, in test_bms_strobe
+    self.assertGreaterEqual(flash_count, 2, "BMS_STROBE_OUT did not flash as expected.")
+AssertionError: 0 not greater than or equal to 2 : BMS_STROBE_OUT did not flash as expected.
+
+Stdout:
+False
+False
+False
+False
+False
+False
+False
+False
+False
+False
+]]></failure>
+			<system-out><![CDATA[False
+False
+False
+False
+False
+False
+False
+False
+False
+False
+]]></system-out>
+		</testcase>
+		<testcase classname="test.DriverBoardTests" name="test_turn_signals" time="6.005" timestamp="2025-09-08T05:23:22" file="/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py" line="13">
+			<failure type="AssertionError" message="0 not greater than or equal to 2 : LEFT_TURN_OUT did not flash as expected."><![CDATA[Traceback (most recent call last):
+  File "/home/solarcar/solarcar/Rivanna3/DriverBoard/tests/test.py", line 41, in test_turn_signals
+    self.assertGreaterEqual(flash_count, 2, "LEFT_TURN_OUT did not flash as expected.")
+AssertionError: 0 not greater than or equal to 2 : LEFT_TURN_OUT did not flash as expected.
+]]></failure>
+		</testcase>
 	</testsuite>
 </testsuites>
