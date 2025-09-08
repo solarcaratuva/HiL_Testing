@@ -1,19 +1,12 @@
-from gpioPins import *
+import gpiozero
 import time
 
-pinOut = AnalogOutput("GPIO11")
+pinOut = gpiozero.PWMOutputDevice("GPIO5", frequency=5000)
 
+#Sending analog value to nucleo
 while True:
-    # turn on
-    print("turning on")
-    pinOut.on()
-    time.sleep(2)
-    # turn off 
-    print("turning off")
-    pinOut.off()
-    time.sleep(2)
+	pinOut.value = 0.64
+	print(f"SENDING {pinOut.value}")
+    #pinOut.pulse() #Useful function to sweep all ranges
 
-    # write a value of 0.5 to the AnalogOutput pin and rad
-    pinOut.write(0.5)
-	print(pinOut.read())
-    time.sleep(2)
+	time.sleep(2)
