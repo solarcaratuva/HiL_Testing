@@ -29,7 +29,7 @@ def testReadThread(canBus : CANBus):
 		time.sleep(0.5)
 		counter = counter + 1
 		
-#Send BPSError to Nucleo (currently turn LD1 off and on)
+#Send BPSError to Nucleo (currently turn LD2 off and on)
 def testWrite(canBus : CANBus):
 	#Example CANMessage
 	name = "BPSError"

@@ -1,3 +1,6 @@
+import sys
+sys.path.append("/home/solarcar/solarcar/HiL_Testing/Server")
+
 import gpiozero
 import time
 import config
@@ -133,6 +136,17 @@ class AnalogOutput:
         
         self.pinObject.value = value
         time.sleep(0.02) # wait 20ms for the capacitor in the lowpass filter to charge / discharge as needed
+        
+    #Accepts values of [0,3.3]; wrapper to control pin based on voltage
+    def write_voltage(self, value: float) -> None:
+        if not isinstance(value, float):
+            raise TypeError("Value must be a float")
+        if value < 0 or value > 3.3:
+            raise ValueError("Value must be between 0 and 3.3")
+         
+         #Convert to a percentage
+        self.pinObject.value = value / 3.3
+        time.sleep(0.02)
         
     def read(self) -> float:
         return self.pinObject.value
