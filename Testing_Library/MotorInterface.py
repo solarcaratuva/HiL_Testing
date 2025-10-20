@@ -54,7 +54,7 @@ class MotorInterface:
         self.mru_regen = None
         self.THROTTLE_ADDR = 0x2F
         self.REGEN_ADDR = 0x2E
-        self.Lock = threading.lock()
+        self.Lock = threading.Lock()
         self.startReadThread()
 
 
@@ -110,14 +110,15 @@ class MotorInterface:
 motor_interface = MotorInterface()
 
 while(True):
+	
     throttle_raw    = motor_interface.get_throttle_raw()
     throttle_norm   = motor_interface.get_throttle()
     regen_raw       = motor_interface.get_regen_raw() 
     regen_norm      = motor_interface.get_regen()
-
-
-
-
-
-
+    print("Details")
+    print(throttle_raw)
+    print(throttle_norm)
+    print(regen_raw)
+    print(regen_norm)
+    time.sleep(1)
 
