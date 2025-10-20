@@ -9,8 +9,8 @@ REGEN_ADDR = 0x2E
 
 # Serial Configuration
 ser = serial.Serial(
-    port='/dev/ttyAMA0',
-    baudrate=115200,  
+    port='/dev/ttyACM0',
+    baudrate=9600,  
     timeout=1
 )
 
@@ -31,11 +31,11 @@ while True:
             throttle = data[0] | ((data[1] & 0x01) << 8) 
             regen = ((data[1] >> 1) & 0x7F) | ((data[2] & 0x03) << 7)  
             
-            print(f"Throttle: {throttle}%) | Regen: {regen}}%)")
+            print(f"Throttle: {throttle}%) | Regen: {regen})")
         else:
             print(f"Incomplete data: got {len(data)} bytes instead of 3")
     elif byte_read:
-        print(f"Unexpected byte: {byte_read}")
+        print(f"Unexpected byte:{byte_read}")
 
 '''
 API for test Moto interface
