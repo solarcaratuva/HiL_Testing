@@ -5,7 +5,7 @@ import os
 import requests
 
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "Rivanna3"))
 
 
 def ensure_submodule_initialized(submodule_path: str):
