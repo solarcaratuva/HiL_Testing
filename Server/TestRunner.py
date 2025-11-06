@@ -46,10 +46,14 @@ def run_tests() -> None:
         if os.path.isdir(board_folder):
             suite = make_suite(board_folder)
             custom_suite = CustomTestSuite([suite])
-            all_suites.addTests(custom_suite)
+            all_suites.addTest(custom_suite)
+            print("Added test to custom suite")
         else:
             print(f"Warning: Folder for board '{board}' not found at path: {board_folder}")
 
     with open("test-results.xml", "wb") as output:
         runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
         runner.run(all_suites)
+
+if __name__ == "__main__":
+    run_tests()
