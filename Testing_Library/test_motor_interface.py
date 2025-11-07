@@ -6,6 +6,8 @@ THROTTLE_ADDR = 0x2F
 REGEN_ADDR  = 0x2E
 
 
+
+
 '''
 Both the throttle and regen are 9 it bit values, send them both at once in 
 a 3 byte value and then just read based on there
@@ -19,13 +21,16 @@ ser = serial.Serial(
 
 
 while True:
-    if ser.read(1) == b'\xFF':   
+    byte_read = ser.read(1)
+    if byte_read == b'\xFF':   
         data = ser.read(2)
         if len(data) == 2:
             throttle_data = data[0]
             regen_data = data[1]
             print(f"Regen: {regen_data} Throttle: {throttle_data}")
-
+    else:
+        print("looping")
+        print(f"byte_read{byte_read}")
 
 '''
 API for test Moto interface
@@ -48,4 +53,5 @@ class Test_Motor_Interface:
     def get_regen_raw() -> int:
         # TODO Return throttle value between [0-255]
         pass
+
 
