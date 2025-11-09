@@ -54,6 +54,7 @@ class MotorInterface:
         self.mru_regen = None
         self.THROTTLE_ADDR = 0x2F
         self.REGEN_ADDR = 0x2E
+        self.Lock = threading.lock()
         self.startReadThread()
 
 
@@ -67,20 +68,20 @@ class MotorInterface:
             print(f"Exception")
     def readThrottleAndRegen(self):
         while(not self.stop_thread):
-            with self.lock:
-                byte_read = ser.read(1)
-                if byte_read == b'\xFF':  # Start Byte
-                    data = ser.read(3)  # Read 3 bytes for two 9-bit values
-                    if len(data) == 3:
-                        # two 9-bit values from 3 bytes
-                        # Byte 0: throttle[7:0]
-                        # Byte 1: throttle[8] in bit 0, regen[6:0] in bits 7:1
-                        # Byte 2: regen[8:7] in bits 1:0
+                with self.Lock:
+                    byte_read = ser.read(1)
+                    if byte_read == b'\xFF':  # Start Byte
+                        data = ser.read(3)  # Read 3 bytes for two 9-bit values
+                        if len(data) == 3:
+                            # two 9-bit values from 3 bytes
+                            # Byte 0: throttle[7:0]
+                            # Byte 1: throttle[8] in bit 0, regen[6:0] in bits 7:1
+                            # Byte 2: regen[8:7] in bits 1:0
 
-                        # Extracting throttle and regen
-                        self.mru_throttle = data[0] | ((data[1] & 0x01) << 8) 
-                        self.mru_regen = ((data[1] >> 1) & 0x7F) | ((data[2] & 0x03) << 7)  
-                        
+                            # Extracting throttle and regen
+                            self.mru_throttle = data[0] | ((data[1] & 0x01) << 8) 
+                            self.mru_regen = ((data[1] >> 1) & 0x7F) | ((data[2] & 0x03) << 7)  
+                            
     def get_throttle(self) -> float:
         # Normalized between [0-1.0]
         if self.mru_throttle is None:
