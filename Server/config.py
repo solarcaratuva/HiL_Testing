@@ -26,6 +26,7 @@ def read_in_configs(repoName: str) -> bool:
     REPO_ROOT = SERVER_CONFIG["repo_paths"][repoName]
     
     repo_config_path = os.path.join(REPO_ROOT, "hil_config.json")
+    print(f"[DEBUG] Reading hil_config.json from: {repo_config_path}")
     with open(repo_config_path, 'r') as file:
         REPO_CONFIG = json.load(file)
 
