@@ -36,6 +36,8 @@ def make_suite(board_folder):
 
 def run_tests() -> None:
     board_names = config.REPO_CONFIG["boards"].keys()
+    print("DEBUG: Boards in config:", board_names)
+
 
     all_suites = unittest.TestSuite()
 
@@ -55,5 +57,3 @@ def run_tests() -> None:
         runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
         runner.run(all_suites)
 
-if __name__ == "__main__":
-    run_tests()
