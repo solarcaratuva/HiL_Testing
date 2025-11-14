@@ -10,16 +10,6 @@ THROTTLE_ADDR = 0x2F
 REGEN_ADDR = 0x2E
 THROTTLE_START_BYTE = b'\xFF'
 REGEN_START_BYTE = b'\xFE'
-
-# Serial Configuration
-ser = serial.Serial(
-    port='/dev/ttyACM0',
-    baudrate=9600,  
-    timeout=1
-)
-
-print("Waiting for Arduino to start...")
-time.sleep(2)  # Give Arduino time to boot
 '''
 while True:
     byte_read = ser.read(1)
@@ -41,22 +31,23 @@ while True:
     elif byte_read:
         print(f"Unexpected byte:{byte_read}")
 '''
-ser = serial.Serial(
-            port='/dev/ttyACM0',
-            baudrate=9600,  
-            timeout=1
-        )
-'''
-API for test Motor interface
-'''
+
 class MotorInterfaceTest:
-    def __init__(self):
+    """API for test Motor interface"""
+    def __init__(self, port='/dev/ttyACM0', baudrate=9600):
         self.stop_thread = False
         self.mru_throttle = None
         self.mru_regen = None
         self.THROTTLE_ADDR = 0x2F
         self.REGEN_ADDR = 0x2E
         self.Lock = threading.Lock()
+        self.ser = serial.Serial(
+            port=port,
+            baudrate=baudrate,
+            timeout=1
+        )
+        print("Waiting for Arduino to start...")
+        time.sleep(2)  # Give Arduino time to boot
         self.startReadThread()
 
 
@@ -71,9 +62,9 @@ class MotorInterfaceTest:
     def readThrottleAndRegen(self):
         while(not self.stop_thread):
                 with self.Lock:
-                    byte_read = ser.read(1)
+                    byte_read = self.ser.read(1)
                     if byte_read == THROTTLE_START_BYTE:  # Throttle start marker
-                        data = ser.read(2)  # Read 2 bytes for 9-bit value
+                        data = self.ser.read(2)  # Read 2 bytes for 9-bit value
                         if len(data) == 2:
                             # Extract 9-bit value from 2 bytes
                             # Byte 0: value[7:0]
@@ -81,7 +72,7 @@ class MotorInterfaceTest:
                             # Range: 0-256 (9 bits), but normalized to 0-256
                             self.mru_throttle = data[0] | ((data[1] & 0x01) << 8)
                     elif byte_read == REGEN_START_BYTE: 
-                        data = ser.read(2)  # Read 2 bytes for 9-bit value
+                        data = self.ser.read(2)  # Read 2 bytes for 9-bit value
                         if len(data) == 2:
                             # Extract 9-bit value from 2 bytes
                             # Byte 0: value[7:0]
