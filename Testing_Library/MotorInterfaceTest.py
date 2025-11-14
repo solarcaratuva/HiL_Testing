@@ -114,17 +114,6 @@ class MotorInterfaceTest:
         return self.mru_regen
 
 
-motor_interface = MotorInterfaceTest()
-
-while(True):
-    throttle_raw    = motor_interface.get_throttle_raw()
-    throttle_norm   = motor_interface.get_throttle()
-    regen_raw       = motor_interface.get_regen_raw() 
-    regen_norm      = motor_interface.get_regen()
-
-
-
-
 
 
 
