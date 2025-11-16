@@ -10,7 +10,7 @@ new_root = os.path.abspath(os.path.join(script_dir, "..", "Testing_Library"))
 sys.path.append(new_root)
 sys.path.append(os.getcwd())
 
-from Testing_Library.upload import upload_firmware
+from upload import upload_firmware
 
 
 # Custom TestSuite that overrides the run method to run setup and teardown code; added code to maek firmware upload once per board, not test
