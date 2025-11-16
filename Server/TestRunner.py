@@ -10,6 +10,8 @@ new_root = os.path.abspath(os.path.join(script_dir, "..", "Testing_Library"))
 sys.path.append(new_root)
 sys.path.append(os.getcwd())
 
+from upload_wrapper import upload_firmware
+
 # Custom TestSuite that overrides the run method to run setup and teardown code; added code to maek firmware upload once per board, not test
 class CustomTestSuite(unittest.TestSuite):
     def __init__(self, tests, board_name):
