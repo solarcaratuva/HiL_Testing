@@ -4,21 +4,29 @@ import sys
 import config
 import xmlrunner
 
+from Testing_Library.upload import upload_firmware
+
 # Adds the Testing_Library to the path, allowing tests to import from it
 script_dir = os.path.dirname(os.path.abspath(__file__))
 new_root = os.path.abspath(os.path.join(script_dir, "..", "Testing_Library"))
 sys.path.append(new_root)
 sys.path.append(os.getcwd())
 
-# Custom TestSuite that overrides the run method to run setup and teardown code
+# Custom TestSuite that overrides the run method to run setup and teardown code; added code to maek firmware upload once per board, not test
 class CustomTestSuite(unittest.TestSuite):
-    def run(self, result, debug=False):
-        setup_suite()
-        super().run(result, debug)
-        teardown_suite()
+    def __init__(self, tests, board_name):
+        super().__init__(tests)
+        self.board_name = board_name
 
-def setup_suite():
-    print("Setting up suite...") # replace with setup code
+    def run(self, result, debug=False):
+        setup_suite(self.board_name)
+        super().run(result, debug)
+        # teardown_suite(self.board_name) # optional
+
+def setup_suite(board_name):
+    print(f"[SUITE] Uploading firmware for {board_name}")
+    upload_firmware(board_name)
+
 
 def teardown_suite():
     print("Tearing down suite...") # replace with teardown code
@@ -47,7 +55,7 @@ def run_tests() -> None:
         
         if os.path.isdir(board_folder):
             suite = make_suite(board_folder)
-            custom_suite = CustomTestSuite([suite])
+            custom_suite = CustomTestSuite([suite], board)
             all_suites.addTest(custom_suite)
             print("Added test to custom suite")
         else:
