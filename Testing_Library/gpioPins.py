@@ -50,7 +50,7 @@ def reset_nucleo() -> None:
     print("[RESET] Resetting Nucleo via PC10...")
 
     # intiialize reset pin as output (active low)
-    reset_pin = DigitalIOPin("PC10", PinMode.OUTPUT)
+    reset_pin = DigitalOutput("PC10")
 
     try:
         # hold reset low
