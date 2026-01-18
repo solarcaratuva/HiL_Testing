@@ -47,22 +47,22 @@ def reset_all_pins() -> None:
     pass #TODO
 
 def reset_nucleo() -> None:
-    print("[RESET] Resetting Nucleo via PC10...")
+	print("[RESET] Resetting Nucleo via GPIO3...")
 
-    # intiialize reset pin as output (active low)
-    reset_pin = DigitalOutput(14)
+	# intiialize reset pin as output (active low)
+	reset_pin = gpiozero.DigitalOutputDevice("GPIO3")
 
-    try:
-        # hold reset low
-        reset_pin.write(False)
-        time.sleep(0.1)  # 100 ms pulse
+	try:
+		# hold reset low
+		reset_pin.off()
+		time.sleep(0.1)  # 100 ms pulse
 
-        # release reset (set high)
-        reset_pin.write(True)
+		# release reset (set high)
+		reset_pin.on()
 
-        print("[RESET] Nucleo reset complete.")
-    finally:
-        pass
+		print("[RESET] Nucleo reset complete.")
+	finally:
+		pass
 
 
 class DigitalOutput:
