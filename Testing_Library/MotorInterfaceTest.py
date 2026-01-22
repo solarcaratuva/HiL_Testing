@@ -71,6 +71,7 @@ class MotorInterfaceTest:
                             # Byte 1: value[8] in bit 0
                             # Range: 0-256 (9 bits), but normalized to 0-256
                             self.mru_throttle = data[0] | ((data[1] & 0x01) << 8)
+                            print(f"Throttle: {self.mru_throttle}")
                     elif byte_read == REGEN_START_BYTE: 
                         data = self.ser.read(2)  # Read 2 bytes for 9-bit value
                         if len(data) == 2:
@@ -79,6 +80,7 @@ class MotorInterfaceTest:
                             # Byte 1: value[8] in bit 0
                             # Range: 0-256 (9 bits), but normalized to 0-256
                             self.mru_regen = data[0] | ((data[1] & 0x01) << 8)  
+                            print(f"Regen: {self.mru_regen}")
                             
     def get_throttle(self) -> float:
         # Normalized between [0-1.0]
@@ -103,8 +105,3 @@ class MotorInterfaceTest:
         if self.mru_regen is None:
             return None
         return self.mru_regen
-
-
-
-
-
