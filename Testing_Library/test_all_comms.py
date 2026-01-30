@@ -12,8 +12,8 @@ import gpiozero
 from gpioPins import AnalogOutput
 
 # Global Pins for Synchronization
-pinOut = DigitalOutput("GPIO2")
-pinIn = DigitalInput("GPIO11")
+pinOut = DigitalOutput("2")
+pinIn = DigitalInput("11")
 
 # -----------Testing CAN Comms-----------
 
@@ -89,7 +89,7 @@ def testAnalog():
 
 if __name__ == "__main__":
 	# Wait for nucleo
-    while pinIn.value == 1:
+	while pinIn.value == 1:
 		pinOut.value = 0
 		time.sleep(0.1)
 
