@@ -66,20 +66,18 @@ class MotorInterfaceTest:
                     if byte_read == THROTTLE_START_BYTE:  # Throttle start marker
                         data = self.ser.read(2)  # Read 2 bytes for 9-bit value
                         if len(data) == 2:
-                            # Extract 9-bit value from 2 bytes
-                            # Byte 0: value[7:0]
-                            # Byte 1: value[8] in bit 0
-                            # Range: 0-256 (9 bits), but normalized to 0-256
-                            self.mru_throttle = data[0] | ((data[1] & 0x01) << 8)
+                            # motorinterface.cpp sends (0x100 - throttle) 
+                            # first byte contains lower 8 bits, second byte LSB is the 9th bit
+                            raw_from_arduino = data[0] | ((data[1] & 0x01) << 8)
+                            self.mru_throttle = 256 - raw_from_arduino  # PowerBoard sends (0x100 - throttle) over I2C
                             print(f"Throttle: {self.mru_throttle}")
                     elif byte_read == REGEN_START_BYTE: 
                         data = self.ser.read(2)  # Read 2 bytes for 9-bit value
                         if len(data) == 2:
-                            # Extract 9-bit value from 2 bytes
-                            # Byte 0: value[7:0]
-                            # Byte 1: value[8] in bit 0
-                            # Range: 0-256 (9 bits), but normalized to 0-256
-                            self.mru_regen = data[0] | ((data[1] & 0x01) << 8)  
+                            # motorinterface.cpp sends (0x100 - regen)
+                            # first byte contains lower 8 bits, second byte LSB is the 9th bit
+                            raw_from_arduino = data[0] | ((data[1] & 0x01) << 8)
+                            self.mru_regen = 256 - raw_from_arduino  # PowerBoard sends (0x100 - regen) over I2C
                             print(f"Regen: {self.mru_regen}")
                             
     def get_throttle(self) -> float:
