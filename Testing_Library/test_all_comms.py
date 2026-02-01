@@ -45,7 +45,18 @@ def testWrite(canBus : CANBus):
 		time.sleep(2)
 		counter = counter + 1
 		
-canBus = CANBus()
-#testAddMethod(canBus)
-testWrite(canBus)
-#testReadThread(canBus)
+def testCAN():
+	canBus = CANBus()
+	testWrite(canBus)
+	testReadThread(canBus)
+
+def testAnalog():
+# def testDigital():
+# 	pinOut = DigitalOutput("GPIO2")
+# 	pinIn = DigitalInput("GPIO11")
+# 	for i in range(10):
+# 		pinOut
+
+if __name__ == "__main__":
+    testCAN()
+	testAnalog()
