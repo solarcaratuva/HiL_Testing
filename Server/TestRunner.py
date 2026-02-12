@@ -10,15 +10,23 @@ new_root = os.path.abspath(os.path.join(script_dir, "..", "Testing_Library"))
 sys.path.append(new_root)
 sys.path.append(os.getcwd())
 
-# Custom TestSuite that overrides the run method to run setup and teardown code
-class CustomTestSuite(unittest.TestSuite):
-    def run(self, result, debug=False):
-        setup_suite()
-        super().run(result, debug)
-        teardown_suite()
+from upload_wrapper import upload_firmware
 
-def setup_suite():
-    print("Setting up suite...") # replace with setup code
+# Custom TestSuite that overrides the run method to run setup and teardown code; added code to maek firmware upload once per board, not test
+class CustomTestSuite(unittest.TestSuite):
+    def __init__(self, tests, board_name):
+        super().__init__(tests)
+        self.board_name = board_name
+
+    def run(self, result, debug=False):
+        setup_suite(self.board_name)
+        super().run(result, debug)
+        # teardown_suite(self.board_name) # optional
+
+def setup_suite(board_name):
+    print(f"[SUITE] Uploading firmware for {board_name}")
+    upload_firmware(board_name)
+
 
 def teardown_suite():
     print("Tearing down suite...") # replace with teardown code
@@ -36,6 +44,8 @@ def make_suite(board_folder):
 
 def run_tests() -> None:
     board_names = config.REPO_CONFIG["boards"].keys()
+    print("DEBUG: Boards in config:", board_names)
+
 
     all_suites = unittest.TestSuite()
 
@@ -45,11 +55,13 @@ def run_tests() -> None:
         
         if os.path.isdir(board_folder):
             suite = make_suite(board_folder)
-            custom_suite = CustomTestSuite([suite])
-            all_suites.addTests(custom_suite)
+            custom_suite = CustomTestSuite([suite], board)
+            all_suites.addTest(custom_suite)
+            print("Added test to custom suite")
         else:
             print(f"Warning: Folder for board '{board}' not found at path: {board_folder}")
 
     with open("test-results.xml", "wb") as output:
         runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
         runner.run(all_suites)
+

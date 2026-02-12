@@ -47,7 +47,22 @@ def reset_all_pins() -> None:
     pass #TODO
 
 def reset_nucleo() -> None:
-    pass #TODO
+    print("[RESET] Resetting Nucleo via PC10...")
+
+    # intiialize reset pin as output (active low)
+    reset_pin = DigitalOutput(14)
+
+    try:
+        # hold reset low
+        reset_pin.write(False)
+        time.sleep(0.1)  # 100 ms pulse
+
+        # release reset (set high)
+        reset_pin.write(True)
+
+        print("[RESET] Nucleo reset complete.")
+    finally:
+        pass
 
 
 class DigitalOutput:
