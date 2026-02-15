@@ -36,10 +36,8 @@ class MotorInterfaceTest:
     """API for test Motor interface"""
     def __init__(self, port='/dev/ttyACM0', baudrate=9600):
         self.stop_thread = False
-        self.mru_throttle = None
-        self.mru_regen = None
-        self.THROTTLE_ADDR = 0x2F
-        self.REGEN_ADDR = 0x2E
+        self.mru_throttle = None # Most Recently Used Throttle Value
+        self.mru_regen = None    # Most Recently Used Regen Value
         self.Lock = threading.Lock()
         self.ser = serial.Serial(
             port=port,
@@ -55,17 +53,23 @@ class MotorInterfaceTest:
     def startReadThread(self):
         read_thread = threading.Thread(target=self.readThrottleAndRegen)
         read_thread.daemon = True
-        try:
+        try: 
             read_thread.start()
-        except ValueError as e:
-            print(f"Exception")
+        except RuntimeError as e:
+            raise RuntimeError("Thread Was not Started")
+        
     def readThrottleAndRegen(self):
         while(not self.stop_thread):
+                # set the MRU Values to None so that that an excpetion is thrown not in the thread
                 with self.Lock:
                     try: 
                         byte_read = self.ser.read(1)
                     except serial.SerialException as e:
-                        return
+                        print("Byte was not able to be read, check your connections and ensure that test modes are synced!!!")
+                        # setting Both to None so that Exception is triggered within the getter methods
+                        self.mru_throttle = None
+                        self.mru_regen = None
+                    
                     if byte_read == THROTTLE_START_BYTE:  # Throttle start marker
                         data = self.ser.read(2)  # Read 2 bytes for 9-bit value
                         if len(data) == 2:
@@ -73,7 +77,7 @@ class MotorInterfaceTest:
                             # first byte contains lower 8 bits, second byte LSB is the 9th bit
                             raw_from_arduino = data[0] | ((data[1] & 0x01) << 8)
                             self.mru_throttle = 256 - raw_from_arduino  # PowerBoard sends (0x100 - throttle) over I2C
-                            print(f"Throttle: {self.mru_throttle}")
+                        
                     elif byte_read == REGEN_START_BYTE: 
                         data = self.ser.read(2)  # Read 2 bytes for 9-bit value
                         if len(data) == 2:
@@ -81,28 +85,31 @@ class MotorInterfaceTest:
                             # first byte contains lower 8 bits, second byte LSB is the 9th bit
                             raw_from_arduino = data[0] | ((data[1] & 0x01) << 8)
                             self.mru_regen = 256 - raw_from_arduino  # PowerBoard sends (0x100 - regen) over I2C
-                            print(f"Regen: {self.mru_regen}")
                             
     def get_throttle(self) -> float:
         # Normalized between [0-1.0]
-        if self.mru_throttle is None:
-            return None
-        return self.mru_throttle/256.0
-    
+        with self.lock:
+            if self.mru_throttle is None:
+                raise ValueError('MRU-Throttle Value is None')
+            return self.mru_throttle / 256.0
+        
     def get_throttle_raw(self) -> int:
         # raw between [0-256]
-        if self.mru_throttle is None:
-            return None
-        return self.mru_throttle
+        with self.lock:
+            if self.mru_throttle is None:
+                raise ValueError('MRU-Raw-Throttle Value is None')
+            return self.mru_throttle
     
     def get_regen(self) -> float:
         # Normalized between [0,1.0]
-        if self.mru_regen is None:
-            return None
-        return self.mru_regen/256.0
-    
+        with self.lock:
+            if self.mru_regen is None:
+                raise ValueError('MRU-Regen Value is None')
+            return self.mru_regen / 256.0
+        
     def get_regen_raw(self) -> int:
         # raw between [0-256]
-        if self.mru_regen is None:
-            return None
-        return self.mru_regen
+        with self.lock:
+            if self.mru_regen is None:
+                raise ValueError('MRU-Regen-Raw Value is None')
+            return self.mru_regen
