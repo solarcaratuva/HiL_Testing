@@ -62,7 +62,10 @@ class MotorInterfaceTest:
     def readThrottleAndRegen(self):
         while(not self.stop_thread):
                 with self.Lock:
-                    byte_read = self.ser.read(1)
+                    try: 
+                        byte_read = self.ser.read(1)
+                    except serial.SerialException as e:
+                        return
                     if byte_read == THROTTLE_START_BYTE:  # Throttle start marker
                         data = self.ser.read(2)  # Read 2 bytes for 9-bit value
                         if len(data) == 2:

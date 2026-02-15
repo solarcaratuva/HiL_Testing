@@ -7,10 +7,10 @@
 #define SWAP_COMMAND 0x1FF
 
 // Test Mode: 0 = Throttle only (listen on 0x2F), 1 = Regen only (listen on 0x2E).
-// Must match which test is run: test_throttle needs TEST_MODE 0, test_regen needs TEST_MODE 1.
-#define TEST_MODE 0
+// Must match PowerBoard main.cpp I2C_TEST_MODE: test_throttle → 0, test_regen → 1.
+#define TEST_MODE 1
 
-int currentMode = 0; // 0 = Throttle, 1 = Regen
+int currentMode = 1; // 0 = Throttle, 1 = Regen
 
 void setup() {
   Serial.begin(9600);

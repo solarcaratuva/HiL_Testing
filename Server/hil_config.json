@@ -1,8 +1,9 @@
 {
     "rivanna_root": "/home/solarcar/solarcar/Rivanna3",
     "rivanna3_root": "/SolarCar/Rivanna3",
-    "boards": ["DriverBoard"],
+    "boards": ["PowerBoard"],
     "pin_map": {
-	"DriverBoard": {}
+        "PowerBoard": {}
     }
 }
+
