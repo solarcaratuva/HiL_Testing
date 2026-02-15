@@ -61,22 +61,17 @@ class MotorInterfaceTest:
     def readThrottleAndRegen(self):
         while(not self.stop_thread):
                 # set the MRU Values to None so that that an excpetion is thrown not in the thread
-                with self.Lock:
-                    try: 
-                        byte_read = self.ser.read(1)
-                    except serial.SerialException as e:
-                        print("Byte was not able to be read, check your connections and ensure that test modes are synced!!!")
-                        # setting Both to None so that Exception is triggered within the getter methods
-                        self.mru_throttle = None
-                        self.mru_regen = None
-                    
+                try: 
+                    byte_read = self.ser.read(1)
+
                     if byte_read == THROTTLE_START_BYTE:  # Throttle start marker
                         data = self.ser.read(2)  # Read 2 bytes for 9-bit value
                         if len(data) == 2:
                             # motorinterface.cpp sends (0x100 - throttle) 
                             # first byte contains lower 8 bits, second byte LSB is the 9th bit
                             raw_from_arduino = data[0] | ((data[1] & 0x01) << 8)
-                            self.mru_throttle = 256 - raw_from_arduino  # PowerBoard sends (0x100 - throttle) over I2C
+                            with self.Lock:
+                                self.mru_throttle = 256 - raw_from_arduino  # PowerBoard sends (0x100 - throttle) over I2C
                         
                     elif byte_read == REGEN_START_BYTE: 
                         data = self.ser.read(2)  # Read 2 bytes for 9-bit value
@@ -84,8 +79,15 @@ class MotorInterfaceTest:
                             # motorinterface.cpp sends (0x100 - regen)
                             # first byte contains lower 8 bits, second byte LSB is the 9th bit
                             raw_from_arduino = data[0] | ((data[1] & 0x01) << 8)
-                            self.mru_regen = 256 - raw_from_arduino  # PowerBoard sends (0x100 - regen) over I2C
-                            
+                            with self.Lock:
+                                self.mru_regen = 256 - raw_from_arduino  # PowerBoard sends (0x100 - regen) over I2C
+
+                except serial.SerialException as e:
+                    print("Byte was not able to be read, check your connections and ensure that test modes are synced!!!")
+                    # setting Both to None so that Exception is triggered within the getter methods
+                    self.mru_throttle = None
+                    self.mru_regen = None
+                                
     def get_throttle(self) -> float:
         # Normalized between [0-1.0]
         with self.Lock:
