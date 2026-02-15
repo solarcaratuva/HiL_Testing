@@ -3,7 +3,6 @@ import serial
 import time
 import threading
 
-
 sys.path.append('/home/solarcar/solarcar/HiL_Testing/Server')
 
 THROTTLE_ADDR = 0x2F
@@ -49,7 +48,7 @@ class MotorInterfaceTest:
         self.startReadThread()
 
 
-    #Run infinite thread to read in Throttle and Regen Values
+    # Run infinite thread to read in Throttle and Regen Values
     def startReadThread(self):
         read_thread = threading.Thread(target=self.readThrottleAndRegen)
         read_thread.daemon = True
@@ -57,10 +56,10 @@ class MotorInterfaceTest:
             read_thread.start()
         except RuntimeError as e:
             raise RuntimeError("Thread Was not Started")
-        
+    
+    # Constantly read thorttle and regen values
     def readThrottleAndRegen(self):
         while(not self.stop_thread):
-                # set the MRU Values to None so that that an excpetion is thrown not in the thread
                 try: 
                     byte_read = self.ser.read(1)
 
@@ -83,7 +82,7 @@ class MotorInterfaceTest:
                                 self.mru_regen = 256 - raw_from_arduino  # PowerBoard sends (0x100 - regen) over I2C
 
                 except serial.SerialException as e:
-                    print("Byte was not able to be read, check your connections and ensure that test modes are synced!!!")
+                    print(e)
                     # setting Both to None so that Exception is triggered within the getter methods
                     self.mru_throttle = None
                     self.mru_regen = None

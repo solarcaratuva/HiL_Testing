@@ -15,25 +15,19 @@ int currentMode = 1; // 0 = Throttle, 1 = Regen
 void setup() {
   Serial.begin(9600);
   while (!Serial);
-  Serial.println("Arduino Starting...");
   
   // Initialize based on test mode
   if (TEST_MODE == 1) {
     // Start in regen mode
     Wire.begin(REGEN_ADDR);
     currentMode = 1;
-    Serial.println("Initialized on REGEN_ADDR (0x2E)");
   } else {
     // Start in throttle mode (default)
     Wire.begin(THROTTLE_ADDR);
     currentMode = 0;
-    Serial.println("Initialized on THROTTLE_ADDR (0x2F)");
   }
   
   Wire.onReceive(receiveEvent);
-  Serial.println("Ready to receive I2C data");
-  Serial.print("TEST_MODE: ");
-  Serial.println(TEST_MODE);
 }
 
 void loop() {
@@ -48,11 +42,6 @@ void receiveEvent(int howMany) {
   int lowByte = Wire.read();
   int value = ((highByte << 8) | lowByte) & 0x1FF;
   
-  // Handle swap command
-  if (value == SWAP_COMMAND) {
-    //TODO: 
-    return;
-  }
   // Clamp value to valid range [0, 256]
   if (value > 256) value = 256;
   
