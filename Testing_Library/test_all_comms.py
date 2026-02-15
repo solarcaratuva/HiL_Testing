@@ -54,11 +54,11 @@ def testCAN():
 	canBus = CANBus()
 	testWrite(canBus)
 
-	pinOut.value = 0 # Block nucleo from proceeding
+	pinOut.write(0) # Block nucleo from proceeding
 	# Check that nucleo modified pin to 1 to switch to receiving
-	while pinIn.value == 0:
-		pinOut.value = 0
-		time.sleep(0.1)
+	while pinIn.read() == 0:
+		pinOut.write(0)
+		time.sleep(0.5)
 
 	testReadThread(canBus)
 
@@ -89,18 +89,18 @@ def testAnalog():
 
 if __name__ == "__main__":
 	# Wait for nucleo
-	while pinIn.value == 1:
-		pinOut.value = 0
-		time.sleep(0.1)
+	while pinIn.read() == 1:
+		pinOut.write(0)
+		time.sleep(0.5)
 
-	pinOut.value = 1
+	pinOut.write(1)
 	testCAN()
 
 	# Make sure finished sending
-	while pinIn.value == 1:
-		pinOut.value = 0
+	while pinIn.read() == 1:
+		pinOut.write(0)
 		print("THERE WAS A SYNC ERROR WITH RECEIVING CAN")
-		time.sleep(0.1)
+		time.sleep(0.5)
 
-	pinOut.value = 1
+	pinOut.write(1)
 	testAnalog()
