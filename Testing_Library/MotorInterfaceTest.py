@@ -115,3 +115,9 @@ class MotorInterfaceTest:
             if self.mru_regen is None:
                 raise ValueError('MRU-Regen-Raw Value is None')
             return self.mru_regen
+
+    def close(self):
+        self.stop_thread = True
+        if self.ser and self.ser.is_open:
+            self.ser.close()
+
