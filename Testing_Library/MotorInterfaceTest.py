@@ -88,28 +88,28 @@ class MotorInterfaceTest:
                             
     def get_throttle(self) -> float:
         # Normalized between [0-1.0]
-        with self.lock:
+        with self.Lock:
             if self.mru_throttle is None:
                 raise ValueError('MRU-Throttle Value is None')
             return self.mru_throttle / 256.0
         
     def get_throttle_raw(self) -> int:
         # raw between [0-256]
-        with self.lock:
+        with self.Lock:
             if self.mru_throttle is None:
                 raise ValueError('MRU-Raw-Throttle Value is None')
             return self.mru_throttle
     
     def get_regen(self) -> float:
         # Normalized between [0,1.0]
-        with self.lock:
+        with self.Lock:
             if self.mru_regen is None:
                 raise ValueError('MRU-Regen Value is None')
             return self.mru_regen / 256.0
         
     def get_regen_raw(self) -> int:
         # raw between [0-256]
-        with self.lock:
+        with self.Lock:
             if self.mru_regen is None:
                 raise ValueError('MRU-Regen-Raw Value is None')
             return self.mru_regen
