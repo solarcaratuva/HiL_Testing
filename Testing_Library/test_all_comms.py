@@ -14,6 +14,7 @@ from gpioPins import AnalogOutput
 # Global Pins for Synchronization
 pinOut = DigitalOutput("2")
 pinIn = DigitalInput("11")
+pinReset = DigitalOutput("3")
 
 # -----------Testing CAN Comms-----------
 
@@ -49,18 +50,6 @@ def testWrite(canBus : CANBus):
 	can_message = CanMessage(name, id, signals, timestamp)
 	counter = 0
 	canBus.sendMessage(can_message)
-		
-def testCAN():
-	canBus = CANBus()
-	testWrite(canBus)
-
-	pinOut.value = 0 # Block nucleo from proceeding
-	# Check that nucleo modified pin to 1 to switch to receiving
-	while pinIn.value == 0:
-		pinOut.value = 0
-		time.sleep(0.1)
-
-	testReadThread(canBus)
 
 #----------------Testing Analog Comms---------------
 
@@ -78,29 +67,41 @@ def send_to_nucleo():
 
 #Test the wrapper api
 def test_analog_class(pinOut):
-	value = round(random.uniform(1.0, 100.0), 2) # Generate random 2 d.p. float
+	value = round(random.uniform(0.0, 1.0), 2) # Generate random 2 d.p. float
 	
-	pinOut.write_voltage(value)
+	pinOut.write(value)
 	print(f'READING IN PIN VALUE: {pinOut.read()}')
 
-def testAnalog():
-	pinOut = AnalogOutput("5")
-	test_analog_class(pinOut)
-
 if __name__ == "__main__":
+	pinReset.on()
+	pinOut.off()
+	input("PRESS ENTER TO CONTINUE")
 	# Wait for nucleo
-	while pinIn.value == 1:
-		pinOut.value = 0
+	while pinIn.read() == 1:
+		pinOut.off()
 		time.sleep(0.1)
 
-	pinOut.value = 1
-	testCAN()
+	print("SENDING CAN MESSAGE")
+	# CAN Testing
+	pinOut.on() # Signal Nucleo
+	canBus = CANBus()
+	testWrite(canBus)
 
-	# Make sure finished sending
-	while pinIn.value == 1:
-		pinOut.value = 0
-		print("THERE WAS A SYNC ERROR WITH RECEIVING CAN")
+	pinOut.off() # Block nucleo from proceeding
+	
+	print("WAITING FOR CAN MESSAGE")
+	# Check that nucleo modified pin to 1 to switch to receiving
+	while pinIn.read() == 0:
+		pinOut.off()
+		#print(pinIn.read())
 		time.sleep(0.1)
+		
+	print("READING CAN MESSAGE")
+	testReadThread(canBus)
 
-	pinOut.value = 1
-	testAnalog()
+	print("SENDING ANALOG MESSAGE")
+	pinAnalogOut = AnalogOutput("6")
+	test_analog_class(pinAnalogOut)
+	pinOut.on()
+	time.sleep(0.1)
+	pinOut.off() # Reset to run again
