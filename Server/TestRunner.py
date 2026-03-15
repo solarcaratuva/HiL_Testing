@@ -43,7 +43,10 @@ def make_suite(board_folder):
     return discovered_tests
 
 def run_tests() -> None:
-
+    print("=== ENTERED run_tests() ===")
+    print("CWD:", os.getcwd())
+    print("TestRunner file:", __file__)
+    
     # monitor script
     import subprocess, datetime
 
