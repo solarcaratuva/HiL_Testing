@@ -43,6 +43,17 @@ def make_suite(board_folder):
     return discovered_tests
 
 def run_tests() -> None:
+
+    # monitor script
+    import subprocess, datetime
+
+    ts = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    os.makedirs("logs", exist_ok=True)
+    serial_log = os.path.abspath(f"logs/{ts}_serial.txt")
+
+    monitor_proc = subprocess.Popen([sys.executable, "monitor.py", "--log", serial_log])
+    print(f"[ARTIFACT] serial_log={serial_log}")
+
     board_names = config.REPO_CONFIG["boards"].keys()
     print("DEBUG: Boards in config:", board_names)
 
@@ -61,7 +72,14 @@ def run_tests() -> None:
         else:
             print(f"Warning: Folder for board '{board}' not found at path: {board_folder}")
 
-    with open("test-results.xml", "wb") as output:
-        runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
-        runner.run(all_suites)
+    try:
+        with open("test-results.xml", "wb") as output:
+            runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
+            runner.run(all_suites)
+    finally:
+        monitor_proc.terminate()
+        try:
+            monitor_proc.wait(timeout=2)
+        except Exception:
+            monitor_proc.kill()
 
