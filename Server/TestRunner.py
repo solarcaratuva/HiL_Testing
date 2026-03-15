@@ -43,19 +43,22 @@ def make_suite(board_folder):
     return discovered_tests
 
 def run_tests() -> None:
-    print("=== ENTERED run_tests() ===")
-    print("CWD:", os.getcwd())
-    print("TestRunner file:", __file__)
-    
     # monitor script
-    import subprocess, datetime
+    import subprocess, datetime, time
 
     ts = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     os.makedirs("logs", exist_ok=True)
     serial_log = os.path.abspath(f"logs/{ts}_serial.txt")
 
-    monitor_proc = subprocess.Popen([sys.executable, "monitor.py", "--log", serial_log])
+    monitor_path = "/absolute/path/to/Rivanna3/monitor.py"   # <-- set this once
+    monitor_proc = subprocess.Popen(
+        [sys.executable, monitor_path, "--log", serial_log],
+        cwd=os.path.dirname(monitor_path),   # important: run from monitor's folder
+        stdout=open(os.path.join(serial_log, "monitor_stdout.log"), "ab"),
+        stderr=open(os.path.join(serial_log, "monitor_stderr.log"), "ab"),
+    )
     print(f"[ARTIFACT] serial_log={serial_log}")
+    print(f"[DEBUG] monitor_path={monitor_path}")
 
     board_names = config.REPO_CONFIG["boards"].keys()
     print("DEBUG: Boards in config:", board_names)
