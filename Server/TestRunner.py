@@ -50,12 +50,12 @@ def run_tests() -> None:
     os.makedirs("logs", exist_ok=True)
     serial_log = os.path.abspath(f"logs/{ts}_serial.txt")
 
-    monitor_path = "/absolute/path/to/Rivanna3/monitor.py"   # <-- set this once
+    monitor_path = "/home/solarcar/solarcar/Rivanna3/monitor.py"
     monitor_proc = subprocess.Popen(
         [sys.executable, monitor_path, "--log", serial_log],
         cwd=os.path.dirname(monitor_path),   # important: run from monitor's folder
-        stdout=open(os.path.join(serial_log, "monitor_stdout.log"), "ab"),
-        stderr=open(os.path.join(serial_log, "monitor_stderr.log"), "ab"),
+        stdout=open(os.path.join("logs", "monitor_stdout.log"), "ab"),
+        stderr=open(os.path.join("logs", "monitor_stderr.log"), "ab"),
     )
     print(f"[ARTIFACT] serial_log={serial_log}")
     print(f"[DEBUG] monitor_path={monitor_path}")
