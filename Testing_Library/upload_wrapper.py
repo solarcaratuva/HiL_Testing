@@ -8,7 +8,7 @@ def upload_firmware(board_name: str):
 
     # Construct path to Rivanna3/upload.py
     script_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../../Rivanna3/upload.py")
+        os.path.join(os.path.dirname(__file__), "../../Rivanna3/upload_old.py")
     )
 
     # Clean up board name (PowerBoard → power)

@@ -35,6 +35,23 @@ def make_suite(board_folder):
     return discovered_tests
 
 def run_tests() -> None:
+    # monitor script
+    import subprocess, datetime, time
+
+    ts = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    os.makedirs("logs", exist_ok=True)
+    serial_log = os.path.abspath(f"logs/{ts}_serial.txt")
+
+    monitor_path = "/home/solarcar/solarcar/Rivanna3/monitor.py"
+    monitor_proc = subprocess.Popen(
+        [sys.executable, monitor_path, "--log", serial_log],
+        cwd=os.path.dirname(monitor_path),   # important: run from monitor's folder
+        stdout=open(os.path.join("logs", "monitor_stdout.log"), "ab"),
+        stderr=open(os.path.join("logs", "monitor_stderr.log"), "ab"),
+    )
+    print(f"[ARTIFACT] serial_log={serial_log}")
+    print(f"[DEBUG] monitor_path={monitor_path}")
+
     board_names = config.REPO_CONFIG["boards"].keys()
 
     all_suites = unittest.TestSuite()
@@ -50,6 +67,14 @@ def run_tests() -> None:
         else:
             print(f"Warning: Folder for board '{board}' not found at path: {board_folder}")
 
-    with open("test-results.xml", "wb") as output:
-        runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
-        runner.run(all_suites)
+    try:
+        with open("test-results.xml", "wb") as output:
+            runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
+            runner.run(all_suites)
+    finally:
+        monitor_proc.terminate()
+        try:
+            monitor_proc.wait(timeout=2)
+        except Exception:
+            monitor_proc.kill()
+
