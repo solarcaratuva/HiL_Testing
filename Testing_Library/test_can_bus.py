@@ -1,7 +1,7 @@
 import sys
 sys.path.append('/home/solarcar/solarcar/HiL_Testing/Server')
 
-from CANBus import CANBus
+from CANBus import CANBus, startRoutingThread
 from CANMessage import CanMessage
 from CANPi import readIn
 import time
@@ -43,8 +43,11 @@ def testWrite(canBus : CANBus):
 		canBus.sendMessage(can_message)
 		time.sleep(2)
 		counter = counter + 1
-		
-canBus = CANBus()
-#testAddMethod(canBus)
-testWrite(canBus)
-#testReadThread(canBus)
+
+# testing will now need to include a can bus time	
+mainBus = CANBus("Main")
+powerBus = CANBus("Power")
+
+startRoutingThread()
+
+testWrite(mainBus)
