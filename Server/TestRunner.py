@@ -44,7 +44,9 @@ def _upload_failed(board: str) -> unittest.TestCase:
 
 
 def run_tests() -> bool:
-    if not Functions.compile():
+    # Rivanna3's config has no compile command; that run only discovers tests.
+    flash = "compileCmd" in config.REPO_CONFIG
+    if flash and not Functions.compile():
         return False
 
     board_names = config.REPO_CONFIG["boards"].keys()
@@ -52,7 +54,7 @@ def run_tests() -> bool:
     all_suites = unittest.TestSuite()
 
     for board in board_names:
-        if not Functions.upload(board):
+        if flash and not Functions.upload(board):
             all_suites.addTest(_upload_failed(board))
             continue
         board_folder = os.path.join(config.REPO_ROOT, board, "tests/")

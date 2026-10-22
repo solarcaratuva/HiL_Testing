@@ -84,7 +84,7 @@ def _use_repo(root: Path):
 
 def _case(folder: Path, marker: Path):
     folder.mkdir(parents=True)
-    folder.joinpath("test_board.py").write_text(textwrap.dedent(f"""
+    folder.joinpath(f"test_{marker.name}.py").write_text(textwrap.dedent(f"""
         import unittest
         class Case(unittest.TestCase):
             def test_runs(self):
@@ -139,11 +139,11 @@ def test_failed_compile_is_logged_and_skips_upload():
         _use_repo(root)
         _container.result = (1, b"cmake failed")
         _docker_ok()
-        popped = []
+        commands = []
         real_popen = Functions.subprocess.Popen
 
         def spy(*args, **kwargs):
-            popped.append(args[0] if args else kwargs)
+            commands.append(args[0] if args else kwargs)
             return real_popen(*args, **kwargs)
 
         Functions.subprocess.Popen = spy
@@ -155,7 +155,7 @@ def test_failed_compile_is_logged_and_skips_upload():
             Functions.subprocess.Popen = real_popen
             os.chdir(old)
         assert "cmake failed" in (root / "logs" / "compile.log").read_text()
-        assert popped == []
+        assert commands == []
 
 
 def test_missing_container_is_logged():
@@ -191,6 +191,39 @@ def test_failed_upload_is_logged_and_fails_that_suite():
         assert not top.exists()
         assert bot.exists()
         assert "flashed" in (root / "logs" / "upload_BottomDist.log").read_text()
+
+
+def test_rivanna3_config_still_runs_without_compile():
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        config.REPO_ROOT = str(root)
+        config.LOG_FOLDER = str(root / "logs")
+        config.REPO_CONFIG = {"boards": {"PowerBoard": {"uploadCmd": "echo hi"}}}
+        marker = root / "ran"
+        _case(root / "PowerBoard" / "tests", marker)
+
+        def boom():
+            raise AssertionError("Rivanna3 run should not compile")
+
+        docker.from_env = boom
+        commands = []
+        real_popen = Functions.subprocess.Popen
+
+        def spy(*args, **kwargs):
+            commands.append(args[0] if args else kwargs)
+            return real_popen(*args, **kwargs)
+
+        Functions.subprocess.Popen = spy
+        old = os.getcwd()
+        os.chdir(root)
+        try:
+            assert TestRunner.run_tests() is True
+        finally:
+            Functions.subprocess.Popen = real_popen
+            os.chdir(old)
+        assert marker.exists()
+        assert commands == []
+        assert not (root / "logs" / "compile.log").exists()
 
 
 def test_upload_helper_calls_rivanna3s_with_hil_flag():
@@ -241,6 +274,7 @@ if __name__ == "__main__":
     test_failed_compile_is_logged_and_skips_upload()
     test_missing_container_is_logged()
     test_failed_upload_is_logged_and_fails_that_suite()
+    test_rivanna3_config_still_runs_without_compile()
     test_upload_helper_calls_rivanna3s_with_hil_flag()
     test_main_stops_when_compile_fails()
     print("ok")
