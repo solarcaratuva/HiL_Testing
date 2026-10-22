@@ -17,25 +17,24 @@ class CanMessage:
         self.timeStamp = timestamp
         
     def encode_message(self) -> bytes:
-        found_db = None
-        #Check whether name is in DBC files
+        matches = []
         for db in DBCs:
             for msg in db.messages:
                 if msg.name == self.messageName:
-                    #Ensure full signal dictionary is present (append if not present)
-                    for signal in msg.signals:
-                        if signal not in self.sigDict:
-                            self.sigDict.update({signal.name: 0})
-                    found_db = db 
-                            
-        if found_db is None:
+                    matches.append((db, msg))
+        if not matches:
             raise ValueError("Name was not present in DBC files")
-            
-        #Expected Encoded Format --> ID (First 2 Bytes), Message (All Remaining Bytes)
+        # Rivanna3 and Rivanna3S reuse names at different ids. The id picks the layout.
+        found_db, found_msg = matches[0]
+        for db, msg in matches:
+            if msg.frame_id == self.messageId:
+                found_db, found_msg = db, msg
+                break
+        for signal in found_msg.signals:
+            if signal.name not in self.sigDict:
+                self.sigDict[signal.name] = 0
         data_encoded = found_db.encode_message(self.messageName, self.sigDict)
-        encoded_message = self.messageId.to_bytes(2, 'big') + len(data_encoded).to_bytes(1, 'big') + data_encoded
-        #add id to first two bytes of encoded_message
-        return encoded_message
+        return self.messageId.to_bytes(2, 'big') + len(data_encoded).to_bytes(1, 'big') + data_encoded
         
     def getName(self):
         return self.messageName

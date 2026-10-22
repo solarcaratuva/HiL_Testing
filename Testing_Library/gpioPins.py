@@ -10,7 +10,11 @@ import config
 #DigitalOutput: Active High, Intitial Value-0, 
 #DigitalInput: Pulldown resistor, Active High, No bounce compensation
 
-DEBUG_SKIP_PIN_VALIDATION = True
+# Off: a Rivanna3S test cannot pass a raw Pi GPIO. Rivanna3 cases still pass one.
+DEBUG_SKIP_PIN_VALIDATION = False
+
+def _sheet_required() -> bool:
+    return "rivanna3s" in str(getattr(config, "REPO_ROOT", "")).lower()
 
 def PinValidate(pinName: str, pinType: str) -> int:
     """SHOULD NOT BE CALLED BY TESTS. Validate the Pin Number.
@@ -19,7 +23,7 @@ def PinValidate(pinName: str, pinType: str) -> int:
     @param pinType: The type of pin as a string
     @return: The pin number on the Pi as an integer"""
 
-    if DEBUG_SKIP_PIN_VALIDATION:
+    if DEBUG_SKIP_PIN_VALIDATION or not _sheet_required():
         return int(pinName)
 
     if not isinstance(pinName, str):
@@ -37,10 +41,11 @@ def PinValidate(pinName: str, pinType: str) -> int:
         raise ValueError(f"Nucleo pin number '{nucleo_pin_number}' not mapped to a Pi pin in server_config.json")
     pi_pin_number = config.SERVER_CONFIG["nucleo_to_pi_mapping"][str(nucleo_pin_number)]
 
-    pin_types_map = {"DigitalIn": "DigitalOut", "DigitalOut": "DigitalIn", "AnalogOut": "AnalogIn"} # key: Pi pin types, values: appropriate Nucleo pin type
-    if pin_types_map[pinType] != config.PIN_TYPES_MAP[pinName]:
+    # Pi class name -> Nucleo constructor it is allowed to touch
+    expected = {"DigitalOutput": "DigitalIn", "DigitalInput": "DigitalOut", "AnalogOutput": "AnalogIn"}
+    if expected[pinType] != config.PIN_TYPES_MAP[pinName]:
         raise ValueError(f"'{pinName}' is a {pinType} pin on the Pi, which can't properly connect to a {config.PIN_TYPES_MAP[pinName]} Nucleo pin")
-    
+
     return pi_pin_number
 
 def reset_all_pins() -> None:
@@ -49,17 +54,12 @@ def reset_all_pins() -> None:
 def reset_nucleo() -> None:
     print("[RESET] Resetting Nucleo via PC10...")
 
-    # intiialize reset pin as output (active low)
-    reset_pin = DigitalOutput(14)
-
+    # Rack reset line is Pi GPIO 14, not a sheet name. Active low.
+    reset_pin = gpiozero.DigitalOutputDevice(14)
     try:
-        # hold reset low
-        reset_pin.write(False)
-        time.sleep(0.1)  # 100 ms pulse
-
-        # release reset (set high)
-        reset_pin.write(True)
-
+        reset_pin.off()
+        time.sleep(0.1)
+        reset_pin.on()
         print("[RESET] Nucleo reset complete.")
     finally:
         pass
