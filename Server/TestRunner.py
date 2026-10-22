@@ -2,6 +2,7 @@ import os
 import unittest
 import sys
 import config
+import Functions
 import xmlrunner
 
 # Adds the Testing_Library to the path, allowing tests to import from it
@@ -34,15 +35,29 @@ def make_suite(board_folder):
 
     return discovered_tests
 
-def run_tests() -> None:
+def _upload_failed(board: str) -> unittest.TestCase:
+    def test_upload(self, board=board):
+        self.fail(f"upload failed for {board}")
+
+    case = type("UploadFailed", (unittest.TestCase,), {"test_upload": test_upload})
+    return case("test_upload")
+
+
+def run_tests() -> bool:
+    if not Functions.compile():
+        return False
+
     board_names = config.REPO_CONFIG["boards"].keys()
 
     all_suites = unittest.TestSuite()
 
     for board in board_names:
+        if not Functions.upload(board):
+            all_suites.addTest(_upload_failed(board))
+            continue
         board_folder = os.path.join(config.REPO_ROOT, board, "tests/")
         print(f"Checking for tests at path: {board_folder}")
-        
+
         if os.path.isdir(board_folder):
             suite = make_suite(board_folder)
             custom_suite = CustomTestSuite([suite])
@@ -52,4 +67,5 @@ def run_tests() -> None:
 
     with open("test-results.xml", "wb") as output:
         runner = xmlrunner.XMLTestRunner(output=output, buffer=True)
-        runner.run(all_suites)
+        result = runner.run(all_suites)
+    return result.wasSuccessful()

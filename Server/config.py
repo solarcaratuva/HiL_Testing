@@ -13,11 +13,12 @@ PIN_TYPES_MAP = dict()
 LOG_FOLDER = os.path.join(os.path.dirname(__file__), "..", "logs")
 
 
-def read_in_configs(repoName: str) -> bool:
+def read_in_configs(repoName: str, server_config_path=None) -> bool:
     """Reads in server and repo config files for a given repo. Sets global constants. Returns True if `repoName` is a valid repo, False otherwise."""
     global SERVER_CONFIG, REPO_CONFIG, REPO_ROOT
 
-    server_config_path = os.path.join(os.path.dirname(__file__), "server_config.json")
+    if server_config_path is None:
+        server_config_path = os.path.join(os.path.dirname(__file__), "server_config.json")
     with open(server_config_path, 'r') as file:
         SERVER_CONFIG = json.load(file)
 

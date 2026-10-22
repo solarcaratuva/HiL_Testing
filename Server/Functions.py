@@ -29,13 +29,18 @@ def gitPull(branch: str) -> tuple[bool, str]:
 def compile() -> bool:
     compileCmd = config.REPO_CONFIG["compileCmd"]
     containerName = config.REPO_CONFIG["containerName"]
-    client = docker.from_env()
-    container = client.containers.get(containerName)
-    container.start()
-
-    # compileCmd = "cd ./Rivanna2/ && ./compile.sh"
-    exitCode, output = container.exec_run(f"sh -c '{compileCmd}'")
     logPath = os.path.join(config.LOG_FOLDER, "compile.log")
+    os.makedirs(config.LOG_FOLDER, exist_ok=True)
+    try:
+        client = docker.from_env()
+        container = client.containers.get(containerName)
+        container.start()
+        exitCode, output = container.exec_run(f"sh -c '{compileCmd}'")
+    except Exception as e:
+        with open(logPath, "w") as log:
+            log.write(str(e))
+        return False
+
     with open(logPath, "w") as log:
         if output:
             log.write(output.decode())
@@ -48,6 +53,7 @@ def upload(board: str) -> bool:
     uploadCmd = config.REPO_CONFIG["boards"][board]["uploadCmd"]
     command = f"cd {config.REPO_ROOT} && {uploadCmd}"
     logPath = os.path.join(config.LOG_FOLDER, f"upload_{board}.log")
+    os.makedirs(config.LOG_FOLDER, exist_ok=True)
     with open(logPath, "w") as log:
         process = subprocess.Popen(command, stdout=log, stderr=log, encoding="utf-8", shell=True)
         process.wait()
