@@ -62,7 +62,8 @@ def reset_nucleo() -> None:
 
         print("[RESET] Nucleo reset complete.")
     finally:
-        pass
+        import CANBus
+        CANBus.clear_receive_queue()
 
 
 class DigitalOutput:
