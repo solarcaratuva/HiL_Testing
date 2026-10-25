@@ -24,8 +24,8 @@ class CanMessage:
                 if msg.name == self.messageName:
                     #Ensure full signal dictionary is present (append if not present)
                     for signal in msg.signals:
-                        if signal not in self.sigDict:
-                            self.sigDict.update({signal.name: 0})
+                        if signal.name not in self.sigDict:
+                            self.sigDict[signal.name] = 0
                     found_db = db 
                             
         if found_db is None:
