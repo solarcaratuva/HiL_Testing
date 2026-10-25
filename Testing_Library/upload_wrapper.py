@@ -6,9 +6,8 @@ import os
 def upload_firmware(board_name: str):
     print(f"[UPLOAD] Flashing firmware for {board_name}...")
 
-    # Construct path to Rivanna3/upload.py
     script_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../../Rivanna3/upload.py")
+        os.path.join(os.path.dirname(__file__), "../../Rivanna3S/upload.py")
     )
 
     # Clean up board name (PowerBoard → power)

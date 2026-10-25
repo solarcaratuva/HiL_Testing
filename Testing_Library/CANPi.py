@@ -3,30 +3,37 @@ import serial
 import time
 import CANMessage
 
-mbed_serial = serial.Serial(
-    #Define the UART Pin Number (PIN 8 tx and PIN 10 rx)
-    port = '/dev/ttyAMA0',
-    baudrate=14400,
-    timeout=10,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE,
-)
-#MADE NULL BY CANBus.py
+mbed_serial = None
+
+def _serial():
+    global mbed_serial
+    from CANBus import uses_canable
+    if uses_canable():
+        raise RuntimeError("Rivanna3S Main CAN uses the CANable, not the 14400 baud UART mock")
+    if mbed_serial is None:
+        mbed_serial = serial.Serial(
+            port="/dev/ttyAMA0",
+            baudrate=14400,
+            timeout=10,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+        )
+    return mbed_serial
 
 #'CAN' Read Using PySerial
 def readIn() -> CANMessage:
     try:
         #CURRENTLY: Message format: 2 bytes of ID, 1 byte of length, rest data
-        mbed_serial.reset_input_buffer()
+        _serial().reset_input_buffer()
 
-        response = mbed_serial.read(2)       
+        response = _serial().read(2)       
         id_data = int.from_bytes(response[0:2], "big")
         
-        response = mbed_serial.read(1)
+        response = _serial().read(1)
         length_data = int.from_bytes(response, "big")
 
         if 0 <= length_data <= 8:
-            response = mbed_serial.read(length_data)
+            response = _serial().read(length_data)
 
         CANData = CANMessage.decode_message(id_data, response, int(time.time()))
         return CANData
@@ -48,7 +55,7 @@ def readIn() -> CANMessage:
         
 #'CAN' Write Using PySerial: accepts CANMessage tx_data
 def writeOut(tx_data):
-    mbed_serial.write(tx_data.encode_message())
+    _serial().write(tx_data.encode_message())
 
 
 #Use this to test encoding (raspberry pi to nucleo)
